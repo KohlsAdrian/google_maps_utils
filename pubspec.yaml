@@ -1,7 +1,12 @@
 name: google_maps_utils
-description: Android Google Maps Utils port.
+description: 
+  Android Google Maps Utils port. Initial version comes with the 3 main Classes of The Google Maps Utils. 
+  SphericalUtils, MathUtils and PolyUtils, classes used most for calculating bounds, distances headings and many more
+  For circular resources, markers and events for Google Maps. All the code are 100% ported from original sources,
+  some modifications are expected to match and run Dart compiler.
+  
 homepage: https://github.com/KohlsAdrian/google_maps_utils/
-version: 1.1.0+1
+version: 1.1.0+2
 
 environment:
   sdk: ">=2.1.0 <3.0.0"

@@ -13,3 +13,6 @@
     Removed google maps package, replaced for created Lightweight LatLng and LatLngBounds classes (lat_lng.dart)
     Fixed docs in all classes
     Added example.dart
+
+## 1.1.0+2
+    Fixed description
