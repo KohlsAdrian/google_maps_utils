@@ -23,8 +23,8 @@ class SphericalUtil {
   * Missing simple conversions from Math class
   * Code from: https://github.com/dart-lang/sdk/issues/4211#issue-84512743
   */
-  static num _toRadians(num deg) => deg * (pi / 180.0);
-  static num _toDegrees(num rad) => rad * (180.0 / pi);
+  static num toRadians(num deg) => deg * (pi / 180.0);
+  static num toDegrees(num rad) => rad * (180.0 / pi);
 
   /*
    * https://stackoverflow.com/a/25867068/3182210 
@@ -98,14 +98,14 @@ class SphericalUtil {
   static double computeHeading(LatLng from, LatLng to) {
     // http://williams.best.vwh.net/avform.htm#Crs
 
-    double fromLat = _toRadians(from.latitude);
-    double fromLng = _toRadians(from.longitude);
-    double toLat = _toRadians(to.latitude);
-    double toLng = _toRadians(to.longitude);
+    double fromLat = toRadians(from.latitude);
+    double fromLng = toRadians(from.longitude);
+    double toLat = toRadians(to.latitude);
+    double toLng = toRadians(to.longitude);
     double dLng = toLng - fromLng;
     double heading = atan2(sin(dLng) * cos(toLat),
         cos(fromLat) * sin(toLat) - sin(fromLat) * cos(toLat) * cos(dLng));
-    return MathUtil.wrap(_toDegrees(heading), -180, 180);
+    return MathUtil.wrap(toDegrees(heading), -180, 180);
   }
 
   /*
@@ -118,10 +118,10 @@ class SphericalUtil {
      */
   static LatLng computeOffset(LatLng from, double distance, double heading) {
     distance /= MathUtil.earthRadius;
-    heading = _toRadians(heading);
+    heading = toRadians(heading);
     // http://williams.best.vwh.net/avform.htm#LL
-    double fromLat = _toRadians(from.latitude);
-    double fromLng = _toRadians(from.longitude);
+    double fromLat = toRadians(from.latitude);
+    double fromLng = toRadians(from.longitude);
     double cosDistance = cos(distance);
     double sinDistance = sin(distance);
     double sinFromLat = sin(fromLat);
@@ -130,7 +130,7 @@ class SphericalUtil {
         cosDistance * sinFromLat + sinDistance * cosFromLat * cos(heading);
     double dLng = atan2(sinDistance * cosFromLat * sin(heading),
         cosDistance - sinFromLat * sinLat);
-    return new LatLng(_toDegrees(asin(sinLat)), _toDegrees(fromLng + dLng));
+    return new LatLng(toDegrees(asin(sinLat)), toDegrees(fromLng + dLng));
   }
 
   /*
@@ -145,13 +145,13 @@ class SphericalUtil {
      */
   static LatLng computeOffsetOrigin(
       LatLng to, double distance, double heading) {
-    heading = _toRadians(heading);
+    heading = toRadians(heading);
     distance /= MathUtil.earthRadius;
     // http://lists.maptools.org/pipermail/proj/2008-October/003939.html
     double n1 = cos(distance);
     double n2 = sin(distance) * cos(heading);
     double n3 = sin(distance) * sin(heading);
-    double n4 = sin(_toRadians(to.latitude));
+    double n4 = sin(toRadians(to.latitude));
     // There are two solutions for b. b = n2 * n4 +/- sqrt(), one solution results
     // in the latitude outside the [-90, 90] range. We first try one solution and
     // back off to the other if we are outside that range.
@@ -174,9 +174,9 @@ class SphericalUtil {
       // No solution which would make sense in LatLng-space.
       return null;
     }
-    double fromLngRadians = _toRadians(to.longitude) -
+    double fromLngRadians = toRadians(to.longitude) -
         atan2(n3, n1 * cos(fromLatRadians) - n2 * sin(fromLatRadians));
-    return new LatLng(_toDegrees(fromLatRadians), _toDegrees(fromLngRadians));
+    return new LatLng(toDegrees(fromLatRadians), toDegrees(fromLngRadians));
   }
 
   /*
@@ -190,10 +190,10 @@ class SphericalUtil {
      */
   static LatLng interpolate(LatLng from, LatLng to, double fraction) {
     // http://en.wikipedia.org/wiki/Slerp
-    double fromLat = _toRadians(from.latitude);
-    double fromLng = _toRadians(from.longitude);
-    double toLat = _toRadians(to.latitude);
-    double toLng = _toRadians(to.longitude);
+    double fromLat = toRadians(from.latitude);
+    double fromLng = toRadians(from.longitude);
+    double toLat = toRadians(to.latitude);
+    double toLng = toRadians(to.longitude);
     double cosFromLat = cos(fromLat);
     double cosToLat = cos(toLat);
 
@@ -216,7 +216,7 @@ class SphericalUtil {
     // Converts interpolated vector back to polar.
     double lat = atan2(z, sqrt(x * x + y * y));
     double lng = atan2(y, x);
-    return new LatLng(_toDegrees(lat), _toDegrees(lng));
+    return new LatLng(toDegrees(lat), toDegrees(lng));
   }
 
   /*
@@ -233,10 +233,10 @@ class SphericalUtil {
      */
   static double computeAngleBetween(LatLng from, LatLng to) {
     return distanceRadians(
-        _toRadians(from.latitude),
-        _toRadians(from.longitude),
-        _toRadians(to.latitude),
-        _toRadians(to.longitude));
+        toRadians(from.latitude),
+        toRadians(from.longitude),
+        toRadians(to.latitude),
+        toRadians(to.longitude));
   }
 
   /*
@@ -255,11 +255,11 @@ class SphericalUtil {
     }
     double length = 0;
     LatLng prev = path[0];
-    double prevLat = _toRadians(prev.latitude);
-    double prevLng = _toRadians(prev.longitude);
+    double prevLat = toRadians(prev.latitude);
+    double prevLng = toRadians(prev.longitude);
     for (final point in path) {
-      double lat = _toRadians(point.latitude);
-      double lng = _toRadians(point.longitude);
+      double lat = toRadians(point.latitude);
+      double lng = toRadians(point.longitude);
       length += distanceRadians(prevLat, prevLng, lat, lng);
       prevLat = lat;
       prevLng = lng;
@@ -298,13 +298,13 @@ class SphericalUtil {
     }
     double total = 0;
     LatLng prev = path[size - 1];
-    double prevTanLat = tan((pi / 2 - _toRadians(prev.latitude)) / 2);
-    double prevLng = _toRadians(prev.longitude);
+    double prevTanLat = tan((pi / 2 - toRadians(prev.latitude)) / 2);
+    double prevLng = toRadians(prev.longitude);
     // For each edge, accumulate the signed area of the triangle formed by the North Pole
     // and that edge ('polar triangle').
     for (final point in path) {
-      double tanLat = tan((pi / 2 - _toRadians(point.latitude)) / 2);
-      double lng = _toRadians(point.longitude);
+      double tanLat = tan((pi / 2 - toRadians(point.latitude)) / 2);
+      double lng = toRadians(point.longitude);
       total += polarTriangleArea(tanLat, lng, prevTanLat, prevLng);
       prevTanLat = tanLat;
       prevLng = lng;
