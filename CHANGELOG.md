@@ -16,3 +16,6 @@
 
 ## 1.1.0+2
     Fixed description
+
+## 1.1.0+3
+    Fixed description
