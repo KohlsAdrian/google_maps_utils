@@ -1,48 +1,40 @@
-/*
- * Copyright 2008, 2013 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+/// Copyright 2008, 2013 Google Inc.
+///
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at
+///
+///      http://www.apache.org/licenses/LICENSE-2.0
+///
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
 
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_utils/google_maps_utils.dart';
-import 'package:google_maps_utils/math_utils.dart';
 import 'package:stack/stack.dart';
-import 'spherical_utils.dart';
 import 'dart:math';
 
 class PolyUtils {
-  /*
-     * Returns tan(latitude-at-lng3) on the great circle (lat1, lng1) to (lat2, lng2). lng1==0.
-     * See http://williams.best.vwh.net/avform.htm .
-     */
+  /// Returns tan(latitude-at-lng3) on the great circle (lat1, lng1) to (lat2, lng2). lng1==0.
+  /// See http://williams.best.vwh.net/avform.htm .
+
   static double _tanLatGC(double lat1, double lat2, double lng2, double lng3) =>
       (tan(lat1) * sin(lng2 - lng3) + tan(lat2) * sin(lng3)) / sin(lng2);
 
-  /*
-     * Returns mercator(latitude-at-lng3) on the Rhumb line (lat1, lng1) to (lat2, lng2). lng1==0.
-     */
+  /// Returns mercator(latitude-at-lng3) on the Rhumb line (lat1, lng1) to (lat2, lng2). lng1==0.
+
   static double _mercatorLatRhumb(
           double lat1, double lat2, double lng2, double lng3) =>
       (MathUtils.mercator(lat1) * (lng2 - lng3) +
           MathUtils.mercator(lat2) * lng3) /
       lng2;
 
-  /*
-     * Computes whether the vertical segment (lat3, lng3) to South Pole _intersects the segment
-     * (lat1, lng1) to (lat2, lng2).
-     * Longitudes are offset by -lng1; the implicit lng1 becomes 0.
-     */
+  /// Computes whether the vertical segment (lat3, lng3) to South Pole _intersects the segment
+  /// (lat1, lng1) to (lat2, lng2).
+  /// Longitudes are offset by -lng1; the implicit lng1 becomes 0.
+
   static bool _intersects(double lat1, double lat2, double lng2, double lat3,
       double lng3, bool geodesic) {
     // Both ends on the same side of lng3.
@@ -76,14 +68,13 @@ class PolyUtils {
           LatLng point, List<LatLng> polygon, bool geodesic) =>
       containsLocationPoint(point.latitude, point.longitude, polygon, geodesic);
 
-  /*
-     * Computes whether the given point lies inside the specified polygon.
-     * The polygon is always considered closed, regardless of whether the last point equals
-     * the first or not.
-     * Inside is defined as not containing the South Pole -- the South Pole is always outside.
-     * The polygon is formed of great circle segments if geodesic is true, and of rhumb
-     * (loxodromic) segments otherwise.
-     */
+  /// Computes whether the given point lies inside the specified polygon.
+  /// The polygon is always considered closed, regardless of whether the last point equals
+  /// the first or not.
+  /// Inside is defined as not containing the South Pole -- the South Pole is always outside.
+  /// The polygon is formed of great circle segments if geodesic is true, and of rhumb
+  /// (loxodromic) segments otherwise.
+
   static bool containsLocationPoint(
       double latitude, double longitude, List<LatLng> polygon, bool geodesic) {
     final int size = polygon.length;
@@ -115,39 +106,35 @@ class PolyUtils {
 
   static final double _defaultTolerance = 0.1; // meters.
 
-  /*
-     * Computes whether the given point lies on or near the edge of a polygon, within a specified
-     * tolerance in meters. The polygon edge is composed of great circle segments if geodesic
-     * is true, and of Rhumb segments otherwise. The polygon edge is implicitly closed -- the
-     * closing segment between the first point and the last point is included.
-     */
+  /// Computes whether the given point lies on or near the edge of a polygon, within a specified
+  /// tolerance in meters. The polygon edge is composed of great circle segments if geodesic
+  /// is true, and of Rhumb segments otherwise. The polygon edge is implicitly closed -- the
+  /// closing segment between the first point and the last point is included.
+
   static bool isLocationOnEdgeTolerance(LatLng point, List<LatLng> polygon,
           bool geodesic, double tolerance) =>
       _isLocationOnEdgeOrPath(point, polygon, true, geodesic, tolerance);
 
-  /*
-     * Same as {@link #isLocationOnEdge(LatLng, List, bool, double)}
-     * with a default tolerance of 0.1 meters.
-     */
+  /// Same as {@link #isLocationOnEdge(LatLng, List, bool, double)}
+  /// with a default tolerance of 0.1 meters.
+
   static bool isLocationOnEdge(
           LatLng point, List<LatLng> polygon, bool geodesic) =>
       isLocationOnEdgeTolerance(point, polygon, geodesic, _defaultTolerance);
 
-  /*
-     * Computes whether the given point lies on or near a polyline, within a specified
-     * tolerance in meters. The polyline is composed of great circle segments if geodesic
-     * is true, and of Rhumb segments otherwise. The polyline is not closed -- the closing
-     * segment between the first point and the last point is not included.
-     */
+  /// Computes whether the given point lies on or near a polyline, within a specified
+  /// tolerance in meters. The polyline is composed of great circle segments if geodesic
+  /// is true, and of Rhumb segments otherwise. The polyline is not closed -- the closing
+  /// segment between the first point and the last point is not included.
+
   static bool isLocationOnPathTolerance(LatLng point, List<LatLng> polyline,
           bool geodesic, double tolerance) =>
       _isLocationOnEdgeOrPath(point, polyline, false, geodesic, tolerance);
 
-  /*
-     * Same as {@link #isLocationOnPath(LatLng, List, bool, double)}
-     * <p>
-     * with a default tolerance of 0.1 meters.
-     */
+  /// Same as {@link #isLocationOnPath(LatLng, List, bool, double)}
+  /// <p>
+  /// with a default tolerance of 0.1 meters.
+
   static bool isLocationOnPath(
           LatLng point, List<LatLng> polyline, bool geodesic) =>
       isLocationOnPathTolerance(point, polyline, geodesic, _defaultTolerance);
@@ -158,51 +145,48 @@ class PolyUtils {
           point, poly, closed, geodesic, toleranceEarth) >=
       0;
 
-  /*
-     * Computes whether (and where) a given point lies on or near a polyline, within a specified tolerance.
-     * The polyline is not closed -- the closing segment between the first point and the last point is not included.
-     *
-     * @param point     our needle
-     * @param poly      our haystack
-     * @param geodesic  the polyline is composed of great circle segments if geodesic
-     *                  is true, and of Rhumb segments otherwise
-     * @param tolerance tolerance (in meters)
-     * @return -1 if point does not lie on or near the polyline.
-     * 0 if point is between poly[0] and poly[1] (inclusive),
-     * 1 if between poly[1] and poly[2],
-     * ...,
-     * poly.size()-2 if between poly[poly.size() - 2] and poly[poly.size() - 1]
-     */
+  /// Computes whether (and where) a given point lies on or near a polyline, within a specified tolerance.
+  /// The polyline is not closed -- the closing segment between the first point and the last point is not included.
+  ///
+  /// [point]     our needle
+  /// [poly]      our haystack
+  /// [geodesic]  the polyline is composed of great circle segments if geodesic
+  ///                  is true, and of Rhumb segments otherwise
+  /// [tolerance] tolerance (in meters)
+  /// [return] -1 if point does not lie on or near the polyline.
+  /// 0 if point is between poly[0] and poly[1] (inclusive),
+  /// 1 if between poly[1] and poly[2],
+  /// ...,
+  /// poly.size()-2 if between poly[poly.size() - 2] and poly[poly.size() - 1]
+
   static int locationIndexOnPathTolerance(
           LatLng point, List<LatLng> poly, bool geodesic, double tolerance) =>
       locationIndexOnEdgeOrPath(point, poly, false, geodesic, tolerance);
 
-  /*
-     * Same as {@link #locationIndexOnPath(LatLng, List, bool, double)}
-     * <p>
-     * with a default tolerance of 0.1 meters.
-     */
+  /// Same as {@link #locationIndexOnPath(LatLng, List, bool, double)}
+  /// <p>
+  /// with a default tolerance of 0.1 meters.
+
   static int locationIndexOnPath(
           LatLng point, List<LatLng> polyline, bool geodesic) =>
       locationIndexOnPathTolerance(
           point, polyline, geodesic, _defaultTolerance);
 
-  /*
-     * Computes whether (and where) a given point lies on or near a polyline, within a specified tolerance.
-     * If closed, the closing segment between the last and first points of the polyline is not considered.
-     *
-     * @param point          our needle
-     * @param poly           our haystack
-     * @param closed         whether the polyline should be considered closed by a segment connecting the last point back to the first one
-     * @param geodesic       the polyline is composed of great circle segments if geodesic
-     *                       is true, and of Rhumb segments otherwise
-     * @param toleranceEarth tolerance (in meters)
-     * @return -1 if point does not lie on or near the polyline.
-     * 0 if point is between poly[0] and poly[1] (inclusive),
-     * 1 if between poly[1] and poly[2],
-     * ...,
-     * poly.size()-2 if between poly[poly.size() - 2] and poly[poly.size() - 1]
-     */
+  /// Computes whether (and where) a given point lies on or near a polyline, within a specified tolerance.
+  /// If closed, the closing segment between the last and first points of the polyline is not considered.
+  ///
+  /// [point]          our needle
+  /// [poly]           our haystack
+  /// [closed]         whether the polyline should be considered closed by a segment connecting the last point back to the first one
+  /// [geodesic]       the polyline is composed of great circle segments if geodesic
+  ///                       is true, and of Rhumb segments otherwise
+  /// [toleranceEarth] tolerance (in meters)
+  /// [return] -1 if point does not lie on or near the polyline.
+  /// 0 if point is between poly[0] and poly[1] (inclusive),
+  /// 1 if between poly[1] and poly[2],
+  /// ...,
+  /// poly.size()-2 if between poly[poly.size() - 2] and poly[poly.size() - 1]
+
   static int locationIndexOnEdgeOrPath(LatLng point, List<LatLng> poly,
       bool closed, bool geodesic, double toleranceEarth) {
     int size = poly.length;
@@ -261,7 +245,7 @@ class PolyUtils {
             double latClosest = MathUtils.inverseMercator(yClosest);
             double havDist =
                 MathUtils.havDistance(lat3, latClosest, x3 - xClosest);
-                
+
             if (havDist < havTolerance) return max(0, idx - 1);
           }
         }
@@ -274,10 +258,9 @@ class PolyUtils {
     return -1;
   }
 
-  /*
-     * Returns sin(initial bearing from (lat1,lng1) to (lat3,lng3) minus initial bearing
-     * from (lat1, lng1) to (lat2,lng2)).
-     */
+  /// Returns sin(initial bearing from (lat1,lng1) to (lat3,lng3) minus initial bearing
+  /// from (lat1, lng1) to (lat2,lng2)).
+
   static double _sinDeltaBearing(double lat1, double lng1, double lat2,
       double lng2, double lat3, double lng3) {
     double sinLat1 = sin(lat1);
@@ -324,24 +307,25 @@ class PolyUtils {
     return sinSumAlongTrack > 0;
   }
 
-  /*
-     * Simplifies the given poly (polyline or polygon) using the Douglas-Peucker decimation
-     * algorithm.  Increasing the tolerance will result in fewer points in the simplified polyline
-     * or polygon.
-     * <p>
-     * When the providing a polygon as input, the first and last point of the list MUST have the
-     * same latitude and longitude (i.e., the polygon must be closed).  If the input polygon is not
-     * closed, the resulting polygon may not be fully simplified.
-     * <p>
-     * The time complexity of Douglas-Peucker is O(n^2), so take care that you do not call this
-     * algorithm too frequently in your code.
-     *
-     * @param poly      polyline or polygon to be simplified.  Polygon should be closed (i.e.,
-     *                  first and last points should have the same latitude and longitude).
-     * @param tolerance in meters.  Increasing the tolerance will result in fewer points in the
-     *                  simplified poly.
-     * @return a simplified poly produced by the Douglas-Peucker algorithm
-     */
+  ///  - Warning, may not work correctly
+  ///
+  /// Simplifies the given poly (polyline or polygon) using the Douglas-Peucker decimation
+  /// algorithm.  Increasing the tolerance will result in fewer points in the simplified polyline
+  /// or polygon.
+  /// <p>
+  /// When the providing a polygon as input, the first and last point of the list MUST have the
+  /// same latitude and longitude (i.e., the polygon must be closed).  If the input polygon is not
+  /// closed, the resulting polygon may not be fully simplified.
+  /// <p>
+  /// The time complexity of Douglas-Peucker is O(n^2), so take care that you do not call this
+  /// algorithm too frequently in your code.
+  ///
+  /// [poly]      polyline or polygon to be simplified.  Polygon should be closed (i.e.,
+  ///                  first and last points should have the same latitude and longitude).
+  /// [tolerance] in meters.  Increasing the tolerance will result in fewer points in the
+  ///                  simplified poly.
+  /// [return] a simplified poly produced by the Douglas-Peucker algorithm
+
   static List<LatLng> simplify(List<LatLng> poly, double tolerance) {
     final int n = poly.length;
     if (n < 1) throw new Exception("Polyline must have at least 1 point");
@@ -362,11 +346,9 @@ class PolyUtils {
           lastPoint.latitude + offset, lastPoint.longitude + offset));
     }
 
-    /*
-      - Warning, may not work correctly - 
-      Here is is a big change code, had to use stack package from dart pub
-      to solve this little bloc of code below, not sure if it is working
-    */
+    //  Here is is a big change code, had to use stack package from dart pub
+    //  to solve this little bloc of code below, not sure if it is working
+
     int idx;
     int maxIdx = 0;
     Stack<List<int>> stack = Stack();
@@ -416,28 +398,26 @@ class PolyUtils {
     return simplifiedLine;
   }
 
-  /*
-     * Returns true if the provided list of points is a closed polygon (i.e., the first and last
-     * points are the same), and false if it is not
-     *
-     * @param poly polyline or polygon
-     * @return true if the provided list of points is a closed polygon (i.e., the first and last
-     * points are the same), and false if it is not
-     */
+  /// Returns true if the provided list of points is a closed polygon (i.e., the first and last
+  /// points are the same), and false if it is not
+  ///
+  /// [poly] polyline or polygon
+  /// [return] true if the provided list of points is a closed polygon (i.e., the first and last
+  /// points are the same), and false if it is not
+
   static bool isClosedPolygon(List<LatLng> poly) {
     LatLng firstPoint = poly[0];
     LatLng lastPoint = poly[poly.length - 1];
     return firstPoint == lastPoint;
   }
 
-  /*
-     * Computes the distance on the sphere between the point p and the line segment start to end.
-     *
-     * @param p     the point to be measured
-     * @param start the beginning of the line segment
-     * @param end   the end of the line segment
-     * @return the distance in meters (assuming spherical earth)
-     */
+  /// Computes the distance on the sphere between the point p and the line segment start to end.
+  ///
+  /// [p]     the point to be measured
+  /// [start] the beginning of the line segment
+  /// [end]   the end of the line segment
+  /// [return] the distance in meters (assuming spherical earth)
+
   static double distanceToLine(
       final LatLng p, final LatLng start, final LatLng end) {
     if (start == end) return SphericalUtils.computeDistanceBetween(end, p);
@@ -463,9 +443,9 @@ class PolyUtils {
     return SphericalUtils.computeDistanceBetween(p, latLng);
   }
 
-  /*
-     * Decodes an encoded path string into a sequence of LatLngs.
-     */
+  /// - Warning, may not work correctly
+  ///
+  /// Decodes an encoded path string into a sequence of LatLngs.
   static List<LatLng> decode(final String encodedPath) {
     int len = encodedPath.length;
 
@@ -476,11 +456,9 @@ class PolyUtils {
     int lat = 0;
     int lng = 0;
 
-    /*
-      - Warning, may not work correctly - 
-      Here is is a big change code, had to use java to dart tricks
-      to solve this little bloc of code below, not sure if it is working
-    */
+    // Here is is a big change code, had to use java to dart tricks
+    // to solve this little bloc of code below, not sure if it is working
+
     while (index < len) {
       int result = 1;
       int shift = 0;
@@ -507,9 +485,10 @@ class PolyUtils {
     return path;
   }
 
-  /*
-     * Encodes a sequence of LatLngs into an encoded path string.
-     */
+  /// - Warning, may not work correctly
+  ///
+  /// Encodes a sequence of LatLngs into an encoded path string.
+
   static String encode(final List<LatLng> path) {
     int lastLat = 0;
     int lastLng = 0;
@@ -532,11 +511,9 @@ class PolyUtils {
     return result.toString();
   }
 
-  /*
-      - Warning, may not work correctly - 
-      Here is is a big change code, had to use java to dart tricks
-      to solve this little bloc of code below, not sure if it is working
-    */
+  // Here is is a big change code, had to use java to dart tricks
+  // to solve this little bloc of code below, not sure if it is working
+
   static void _encode(int v, StringBuffer result) {
     v = v < 0 ? ~(v << 1) : v << 1;
     while (v >= 0x20) {

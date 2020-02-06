@@ -1,34 +1,26 @@
-/*
- * Copyright 2013 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the 'License');
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an 'AS IS' BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+///  Copyright 2013 Google Inc.
+///
+///  Licensed under the Apache License, Version 2.0 (the 'License');
+///  you may not use this file except in compliance with the License.
+///  You may obtain a copy of the License at
+///
+///       http://www.apache.org/licenses/LICENSE-2.0
+///
+///  Unless required by applicable law or agreed to in writing, software
+///  distributed under the License is distributed on an 'AS IS' BASIS,
+///  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+///  See the License for the specific language governing permissions and
+///  limitations under the License.
 import 'dart:math';
-
-import 'math_utils.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_utils/google_maps_utils.dart';
 
 class SphericalUtils {
-  /*
-  * Missing simple conversions from Math class
-  * Code from: https://github.com/dart-lang/sdk/issues/4211#issue-84512743
-  */
+  ///  Missing simple conversions from Math class
+  ///  Code from: https://github.com/dart-lang/sdk/issues/4211#issue-84512743
   static num toRadians(num deg) => deg * (pi / 180.0);
   static num toDegrees(num rad) => rad * (180.0 / pi);
 
-  /*
-   * https://stackoverflow.com/a/25867068/3182210 
-   */
+  /// see: https://stackoverflow.com/a/25867068/3182210
   static String getCardinal(double angle) {
     var val = ((angle / 22.5) + 0.5).floor();
     var arr = [
@@ -53,6 +45,7 @@ class SphericalUtils {
     return arr[(val % 8)];
   }
 
+  /// Get Translation from North-American Direction to PT-BR direction
   static String getDirectionName(String direction) {
     //4 basic direction
     if (direction == 'N')
@@ -74,9 +67,7 @@ class SphericalUtils {
     return direction;
   }
 
-  /*
-  * https://stackoverflow.com/a/31029389/3182210
-  */
+  /// see: https://stackoverflow.com/a/31029389/3182210
   static LatLngBounds toBounds(
       double latitude, double longitude, double radiusInMeters) {
     LatLng center = LatLng(latitude, longitude);
@@ -85,16 +76,13 @@ class SphericalUtils {
         SphericalUtils.computeOffset(center, distanceFromCenterToCorner, 225.0);
     LatLng northeastCorner =
         SphericalUtils.computeOffset(center, distanceFromCenterToCorner, 45.0);
-    return new LatLngBounds(
-        southwest: southwestCorner, northeast: northeastCorner);
+    return LatLngBounds(southwestCorner, northeastCorner);
   }
 
-  /*
-     * Returns the heading from one LatLng to another LatLng. Headings are
-     * expressed in degrees clockwise from North within the range [-180,180).
-     *
-     * @return The heading in degrees clockwise from north.
-     */
+  /// Returns the heading from one LatLng to another LatLng. Headings are
+  /// expressed in degrees clockwise from North within the range [-180,180).
+  ///
+  /// [return] The heading in degrees clockwise from north.
   static double computeHeading(LatLng from, LatLng to) {
     // http://williams.best.vwh.net/avform.htm#Crs
 
@@ -108,14 +96,12 @@ class SphericalUtils {
     return MathUtils.wrap(toDegrees(heading), -180, 180);
   }
 
-  /*
-     * Returns the LatLng resulting from moving a distance from an origin
-     * in the specified heading (expressed in degrees clockwise from north).
-     *
-     * @param from     The LatLng from which to start.
-     * @param distance The distance to travel.
-     * @param heading  The heading in degrees clockwise from north.
-     */
+  /// Returns the LatLng resulting from moving a distance from an origin
+  /// in the specified heading (expressed in degrees clockwise from north).
+  ///
+  /// [from]     The LatLng from which to start.
+  /// [distance] The distance to travel.
+  /// [heading]  The heading in degrees clockwise from north.
   static LatLng computeOffset(LatLng from, double distance, double heading) {
     distance /= MathUtils.earthRadius;
     heading = toRadians(heading);
@@ -130,19 +116,17 @@ class SphericalUtils {
         cosDistance * sinFromLat + sinDistance * cosFromLat * cos(heading);
     double dLng = atan2(sinDistance * cosFromLat * sin(heading),
         cosDistance - sinFromLat * sinLat);
-    return new LatLng(toDegrees(asin(sinLat)), toDegrees(fromLng + dLng));
+    return LatLng(toDegrees(asin(sinLat)), toDegrees(fromLng + dLng));
   }
 
-  /*
-     * Returns the location of origin when provided with a LatLng destination,
-     * meters travelled and original heading. Headings are expressed in degrees
-     * clockwise from North. This function returns null when no solution is
-     * available.
-     *
-     * @param to       The destination LatLng.
-     * @param distance The distance travelled, in meters.
-     * @param heading  The heading in degrees clockwise from north.
-     */
+  /// Returns the location of origin when provided with a LatLng destination,
+  /// meters travelled and original heading. Headings are expressed in degrees
+  /// clockwise from North. This function returns null when no solution is
+  /// available.
+  ///
+  /// [to]       The destination LatLng.
+  /// [distance] The distance travelled, in meters.
+  /// [heading]  The heading in degrees clockwise from north.
   static LatLng computeOffsetOrigin(
       LatLng to, double distance, double heading) {
     heading = toRadians(heading);
@@ -175,18 +159,16 @@ class SphericalUtils {
 
     double fromLngRadians = toRadians(to.longitude) -
         atan2(n3, n1 * cos(fromLatRadians) - n2 * sin(fromLatRadians));
-    return new LatLng(toDegrees(fromLatRadians), toDegrees(fromLngRadians));
+    return LatLng(toDegrees(fromLatRadians), toDegrees(fromLngRadians));
   }
 
-  /*
-     * Returns the LatLng which lies the given fraction of the way between the
-     * origin LatLng and the destination LatLng.
-     *
-     * @param from     The LatLng from which to start.
-     * @param to       The LatLng toward which to travel.
-     * @param fraction A fraction of the distance to travel.
-     * @return The interpolated LatLng.
-     */
+  /// Returns the LatLng which lies the given fraction of the way between the
+  /// origin LatLng and the destination LatLng.
+  ///
+  /// [from]     The LatLng from which to start.
+  /// [to]       The LatLng toward which to travel.
+  /// [fraction] A fraction of the distance to travel.
+  /// [return] The interpolated LatLng.
   static LatLng interpolate(LatLng from, LatLng to, double fraction) {
     // http://en.wikipedia.org/wiki/Slerp
     double fromLat = toRadians(from.latitude);
@@ -200,8 +182,7 @@ class SphericalUtils {
     double angle = computeAngleBetween(from, to);
     double sinAngle = sin(angle);
     if (sinAngle < 1E-6)
-      return new LatLng(
-          from.latitude + fraction * (to.latitude - from.latitude),
+      return LatLng(from.latitude + fraction * (to.latitude - from.latitude),
           from.longitude + fraction * (to.longitude - from.longitude));
 
     double a = sin((1 - fraction) * angle) / sinAngle;
@@ -215,35 +196,27 @@ class SphericalUtils {
     // Converts interpolated vector back to polar.
     double lat = atan2(z, sqrt(x * x + y * y));
     double lng = atan2(y, x);
-    return new LatLng(toDegrees(lat), toDegrees(lng));
+    return LatLng(toDegrees(lat), toDegrees(lng));
   }
 
-  /*
-     * Returns distance on the unit sphere; the arguments are in radians.
-     */
+  /// Returns distance on the unit sphere; the arguments are in radians.
   static double distanceRadians(
           double lat1, double lng1, double lat2, double lng2) =>
       MathUtils.arcHav(MathUtils.havDistance(lat1, lat2, lng1 - lng2));
 
-  /*
-     * Returns the angle between two LatLngs, in radians. This is the same as the distance
-     * on the unit sphere.
-     */
+  /// Returns the angle between two LatLngs, in radians. This is the same as the distance
+  /// on the unit sphere.
   static double computeAngleBetween(LatLng from, LatLng to) => distanceRadians(
       toRadians(from.latitude),
       toRadians(from.longitude),
       toRadians(to.latitude),
       toRadians(to.longitude));
 
-  /*
-     * Returns the distance between two LatLngs, in meters.
-     */
+  /// Returns the distance between two LatLngs, in meters.
   static double computeDistanceBetween(LatLng from, LatLng to) =>
       computeAngleBetween(from, to) * MathUtils.earthRadius;
 
-  /*
-     * Returns the length of the given path, in meters, on Earth.
-     */
+  /// Returns the length of the given path, in meters, on Earth.
   static double computeLength(List<LatLng> path) {
     if (path.length < 2) return 0;
 
@@ -261,30 +234,23 @@ class SphericalUtils {
     return length * MathUtils.earthRadius;
   }
 
-  /*
-     * Returns the area of a closed path on Earth.
-     *
-     * @param path A closed path.
-     * @return The path's area in square meters.
-     */
+  /// Returns the area of a closed path on Earth.
+  ///  [path] A closed path.
+  ///  [return] The path's area in square meters.
   static double computeArea(List<LatLng> path) => computeSignedArea(path).abs();
 
-  /*
-     * Returns the signed area of a closed path on Earth. The sign of the area may be used to
-     * determine the orientation of the path.
-     * 'inside' is the surface that does not contain the South Pole.
-     *
-     * @param path A closed path.
-     * @return The loop's area in square meters.
-     */
+  /// Returns the signed area of a closed path on Earth. The sign of the area may be used to
+  /// determine the orientation of the path.
+  /// 'inside' is the surface that does not contain the South Pole.
+  ///
+  /// [path] A closed path.
+  /// [return] The loop's area in square meters.
   static double computeSignedArea(List<LatLng> path) =>
       SphericalUtils.computeSignedAreaTest(path, MathUtils.earthRadius);
 
-  /*
-     * Returns the signed area of a closed path on a sphere of given radius.
-     * The computed area uses the same units as the radius squared.
-     * Used by SphericalUtilTest.
-     */
+  /// Returns the signed area of a closed path on a sphere of given radius.
+  /// The computed area uses the same units as the radius squared.
+  /// Used by SphericalUtilTest.
   static double computeSignedAreaTest(List<LatLng> path, double radius) {
     int size = path.length;
     if (size < 3) return 0;
@@ -305,13 +271,11 @@ class SphericalUtils {
     return total * (radius * radius);
   }
 
-  /*
-     * Returns the signed area of a triangle which has North Pole as a vertex.
-     * Formula derived from 'Area of a spherical triangle given two edges and the included angle'
-     * as per 'Spherical Trigonometry' by Todhunter, page 71, section 103, point 2.
-     * See http://books.google.com/books?id=3uBHAAAAIAAJ&pg=PA71
-     * The arguments named 'tan' are tan((pi/2 - latitude)/2).
-     */
+  /// Returns the signed area of a triangle which has North Pole as a vertex.
+  /// Formula derived from 'Area of a spherical triangle given two edges and the included angle'
+  /// as per 'Spherical Trigonometry' by Todhunter, page 71, section 103, point 2.
+  /// See http://books.google.com/books?id=3uBHAAAAIAAJ&pg=PA71
+  /// The arguments named 'tan' are tan((pi/2 - latitude)/2).
   static double polarTriangleArea(
       double tan1, double lng1, double tan2, double lng2) {
     double deltaLng = lng1 - lng2;
