@@ -19,7 +19,7 @@ import 'dart:math';
  * Utility functions that are used my both PolyUtil and SphericalUtil.
  */
 
-class MathUtil {
+class MathUtils {
   /*
     * The earth's radius, in meters.
     * Mean radius as defined by IUGG.
@@ -54,9 +54,7 @@ class MathUtil {
      * Returns mercator Y corresponding to latitude.
      * See http://en.wikipedia.org/wiki/Mercator_projection .
      */
-  static double mercator(double lat) {
-    return log(tan(lat * 0.5 + pi / 4));
-  }
+  static double mercator(double lat) => log(tan(lat * 0.5 + pi / 4));
 
   /*
      * Returns latitude from mercator Y.
