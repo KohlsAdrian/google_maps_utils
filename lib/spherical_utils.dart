@@ -48,22 +48,25 @@ class SphericalUtils {
   /// Get Translation from North-American Direction to PT-BR direction
   static String getDirectionName(String direction) {
     //4 basic direction
-    if (direction == 'N')
+    if (direction == 'N') {
       direction = 'Norte';
-    else if (direction == 'S')
+    } else if (direction == 'S') {
       direction = 'Sul';
-    else if (direction == 'E')
+    } else if (direction == 'E') {
       direction = 'Leste';
-    else if (direction == 'W')
+    } else if (direction == 'W') {
       direction = 'Oeste';
+    }
     //4+ direction
-    else if (direction == 'NE')
+    else if (direction == 'NE') {
       direction = 'Nordeste';
-    else if (direction == 'SE')
+    } else if (direction == 'SE') {
       direction = 'Sudeste';
-    else if (direction == 'SW')
+    } else if (direction == 'SW') {
       direction = 'Sudoeste';
-    else if (direction == 'NW') direction = 'Noroeste';
+    } else if (direction == 'NW') {
+      direction = 'Noroeste';
+    }
     return direction;
   }
 
@@ -143,7 +146,9 @@ class SphericalUtils {
     double discriminant = n2 * n2 * n12 + n12 * n12 - n12 * n4 * n4;
 
     // No real solution which would make sense in LatLng-space.
-    if (discriminant < 0) return null;
+    if (discriminant < 0) {
+      return null;
+    }
 
     double b = n2 * n4 + sqrt(discriminant);
     b /= n1 * n1 + n2 * n2;
@@ -155,7 +160,9 @@ class SphericalUtils {
       fromLatRadians = atan2(a, b);
     }
     // No solution which would make sense in LatLng-space.
-    if (fromLatRadians < -pi / 2 || fromLatRadians > pi / 2) return null;
+    if (fromLatRadians < -pi / 2 || fromLatRadians > pi / 2) {
+      return null;
+    }
 
     double fromLngRadians = toRadians(to.longitude) -
         atan2(n3, n1 * cos(fromLatRadians) - n2 * sin(fromLatRadians));
@@ -181,9 +188,10 @@ class SphericalUtils {
     // Computes Spherical interpolation coefficients.
     double angle = computeAngleBetween(from, to);
     double sinAngle = sin(angle);
-    if (sinAngle < 1E-6)
+    if (sinAngle < 1E-6) {
       return LatLng(from.latitude + fraction * (to.latitude - from.latitude),
           from.longitude + fraction * (to.longitude - from.longitude));
+    }
 
     double a = sin((1 - fraction) * angle) / sinAngle;
     double b = sin(fraction * angle) / sinAngle;
@@ -218,7 +226,9 @@ class SphericalUtils {
 
   /// Returns the length of the given path, in meters, on Earth.
   static double computeLength(List<LatLng> path) {
-    if (path.length < 2) return 0;
+    if (path.length < 2) {
+      return 0;
+    }
 
     double length = 0;
     LatLng prev = path[0];
@@ -253,7 +263,9 @@ class SphericalUtils {
   /// Used by SphericalUtilTest.
   static double computeSignedAreaTest(List<LatLng> path, double radius) {
     int size = path.length;
-    if (size < 3) return 0;
+    if (size < 3) {
+      return 0;
+    }
 
     double total = 0;
     LatLng prev = path[size - 1];

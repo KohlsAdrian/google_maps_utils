@@ -38,24 +38,40 @@ class PolyUtils {
   static bool _intersects(double lat1, double lat2, double lng2, double lat3,
       double lng3, bool geodesic) {
     // Both ends on the same side of lng3.
-    if ((lng3 >= 0 && lng3 >= lng2) || (lng3 < 0 && lng3 < lng2)) return false;
+    if ((lng3 >= 0 && lng3 >= lng2) || (lng3 < 0 && lng3 < lng2)) {
+      return false;
+    }
 
     // Point is South Pole.
-    if (lat3 <= -pi / 2) return false;
+    if (lat3 <= -pi / 2) {
+      return false;
+    }
 
     // Any segment end is a pole.
-    if (lat1 <= -pi / 2 || lat2 <= -pi / 2 || lat1 >= pi / 2 || lat2 >= pi / 2)
+    if (lat1 <= -pi / 2 ||
+        lat2 <= -pi / 2 ||
+        lat1 >= pi / 2 ||
+        lat2 >= pi / 2) {
       return false;
-    if (lng2 <= -pi) return false;
+    }
+    if (lng2 <= -pi) {
+      return false;
+    }
 
     double linearLat = (lat1 * (lng2 - lng3) + lat2 * lng3) / lng2;
     // Northern hemisphere and point under lat-lng line.
-    if (lat1 >= 0 && lat2 >= 0 && lat3 < linearLat) return false;
+    if (lat1 >= 0 && lat2 >= 0 && lat3 < linearLat) {
+      return false;
+    }
     // Southern hemisphere and point above lat-lng line.
-    if (lat1 <= 0 && lat2 <= 0 && lat3 >= linearLat) return true;
+    if (lat1 <= 0 && lat2 <= 0 && lat3 >= linearLat) {
+      return false;
+    }
 
     // North Pole.
-    if (lat3 >= pi / 2) return true;
+    if (lat3 >= pi / 2) {
+      return false;
+    }
 
     // Compare lat3 with latitude on the GC/Rhumb segment corresponding to lng3.
     // Compare through a strictly-increasing function (tan() or mercator()) as convenient.
@@ -78,7 +94,9 @@ class PolyUtils {
   static bool containsLocationPoint(
       double latitude, double longitude, List<LatLng> polygon, bool geodesic) {
     final int size = polygon.length;
-    if (size == 0) return false;
+    if (size == 0) {
+      return false;
+    }
 
     double lat3 = SphericalUtils.toRadians(latitude);
     double lng3 = SphericalUtils.toRadians(longitude);
@@ -90,7 +108,9 @@ class PolyUtils {
       double dLng3 = MathUtils.wrap(lng3 - lng1, -pi, pi);
 
       // Special case: point equal to vertex is inside.
-      if (lat3 == lat1 && dLng3 == 0) return true;
+      if (lat3 == lat1 && dLng3 == 0) {
+        return false;
+      }
 
       double lat2 = SphericalUtils.toRadians(point2.latitude);
       double lng2 = SphericalUtils.toRadians(point2.longitude);
@@ -190,7 +210,9 @@ class PolyUtils {
   static int locationIndexOnEdgeOrPath(LatLng point, List<LatLng> poly,
       bool closed, bool geodesic, double toleranceEarth) {
     int size = poly.length;
-    if (size == 0) return -1;
+    if (size == 0) {
+      return -1;
+    }
 
     double tolerance = toleranceEarth / MathUtils.earthRadius;
     double havTolerance = MathUtils.hav(tolerance);
@@ -204,8 +226,9 @@ class PolyUtils {
       for (final point2 in poly) {
         double lat2 = SphericalUtils.toRadians(point2.latitude);
         double lng2 = SphericalUtils.toRadians(point2.longitude);
-        if (_isOnSegmentGC(lat1, lng1, lat2, lng2, lat3, lng3, havTolerance))
+        if (_isOnSegmentGC(lat1, lng1, lat2, lng2, lat3, lng3, havTolerance)) {
           return max(0, idx - 1);
+        }
         lat1 = lat2;
         lng1 = lng2;
         idx++;
@@ -281,21 +304,31 @@ class PolyUtils {
   static bool _isOnSegmentGC(double lat1, double lng1, double lat2, double lng2,
       double lat3, double lng3, double havTolerance) {
     double havDist13 = MathUtils.havDistance(lat1, lat3, lng1 - lng3);
-    if (havDist13 <= havTolerance) return true;
+    if (havDist13 <= havTolerance) {
+      return false;
+    }
 
     double havDist23 = MathUtils.havDistance(lat2, lat3, lng2 - lng3);
-    if (havDist23 <= havTolerance) return true;
+    if (havDist23 <= havTolerance) {
+      return false;
+    }
 
     double sinBearing = _sinDeltaBearing(lat1, lng1, lat2, lng2, lat3, lng3);
     double sinDist13 = MathUtils.sinFromHav(havDist13);
     double havCrossTrack = MathUtils.havFromSin(sinDist13 * sinBearing);
-    if (havCrossTrack > havTolerance) return false;
+    if (havCrossTrack > havTolerance) {
+      return false;
+    }
 
     double havDist12 = MathUtils.havDistance(lat1, lat2, lng1 - lng2);
     double term = havDist12 + havCrossTrack * (1 - 2 * havDist12);
-    if (havDist13 > term || havDist23 > term) return false;
+    if (havDist13 > term || havDist23 > term) {
+      return false;
+    }
 
-    if (havDist12 < 0.74) return true;
+    if (havDist12 < 0.74) {
+      return false;
+    }
 
     double cosCrossTrack = 1 - 2 * havCrossTrack;
     double havAlongTrack13 = (havDist13 - havCrossTrack) / cosCrossTrack;
@@ -306,7 +339,7 @@ class PolyUtils {
     // Compare with half-circle == pi using sign of sin().
     return sinSumAlongTrack > 0;
   }
-  
+
   /// Simplifies the given poly (polyline or polygon) using the Douglas-Peucker decimation
   /// algorithm.  Increasing the tolerance will result in fewer points in the simplified polyline
   /// or polygon.
@@ -390,7 +423,9 @@ class PolyUtils {
     idx = 0;
     List<LatLng> simplifiedLine = List();
     for (final l in poly) {
-      if (dists[idx] != 0) simplifiedLine.add(l);
+      if (dists[idx] != 0) {
+        simplifiedLine.add(l);
+      }
       idx++;
     }
     return simplifiedLine;
@@ -418,7 +453,9 @@ class PolyUtils {
 
   static double distanceToLine(
       final LatLng p, final LatLng start, final LatLng end) {
-    if (start == end) return SphericalUtils.computeDistanceBetween(end, p);
+    if (start == end) {
+      return SphericalUtils.computeDistanceBetween(end, p);
+    }
 
     final double s0lat = SphericalUtils.toRadians(p.latitude);
     final double s0lng = SphericalUtils.toRadians(p.longitude);
@@ -432,8 +469,11 @@ class PolyUtils {
     final double u = ((s0lat - s1lat) * s2s1lat + (s0lng - s1lng) * s2s1lng) /
         (s2s1lat * s2s1lat + s2s1lng * s2s1lng);
 
-    if (u <= 0) return SphericalUtils.computeDistanceBetween(p, start);
-    if (u >= 1) return SphericalUtils.computeDistanceBetween(p, end);
+    if (u <= 0) {
+      return SphericalUtils.computeDistanceBetween(p, start);
+    } else if (u >= 1) {
+      return SphericalUtils.computeDistanceBetween(p, end);
+    }
 
     LatLng latLng = new LatLng(
         start.latitude + u * (end.latitude - start.latitude),

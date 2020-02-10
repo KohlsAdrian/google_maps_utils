@@ -20,7 +20,9 @@ You can request classes for me to port as an issue, the classes ported are what 
 ## Feature links for reasearch
 
 Main project: https://github.com/googlemaps/android-maps-utils
+
 Main project questions: https://stackoverflow.com/questions/tagged/android-maps-utils
+
 Fluttert community request: https://github.com/flutter/flutter/issues/24689
 
 ## Example *.dart

@@ -25,3 +25,7 @@
     Removed unnecessary dependencies
     Updated example.dart
     Added example.dart in Readme
+
+## 1.1.1+1
+    Fixed dart.pub health:
+    DO use curly braces for all flow control structures
