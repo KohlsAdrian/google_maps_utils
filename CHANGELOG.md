@@ -28,5 +28,6 @@
 
 ## 1.1.1+1
 ## 1.1.1+2
+## 1.1.1+3
     Fixed dart.pub health:
     DO use curly braces for all flow control structures
