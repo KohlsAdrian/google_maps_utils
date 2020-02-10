@@ -27,5 +27,6 @@
     Added example.dart in Readme
 
 ## 1.1.1+1
+## 1.1.1+2
     Fixed dart.pub health:
     DO use curly braces for all flow control structures

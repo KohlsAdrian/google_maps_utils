@@ -222,7 +222,7 @@ class PolyUtils {
     double lat1 = SphericalUtils.toRadians(prev.latitude);
     double lng1 = SphericalUtils.toRadians(prev.longitude);
     int idx = 0;
-    if (geodesic)
+    if (geodesic) {
       for (final point2 in poly) {
         double lat2 = SphericalUtils.toRadians(point2.latitude);
         double lng2 = SphericalUtils.toRadians(point2.longitude);
@@ -233,7 +233,7 @@ class PolyUtils {
         lng1 = lng2;
         idx++;
       }
-    else {
+    } else {
       // We project the points to mercator space, where the Rhumb segment is a straight line,
       // and compute the geodesic distance between point3 and the closest point on the
       // segment. This method is an approximation, because it uses "closest" in mercator
@@ -359,9 +359,12 @@ class PolyUtils {
 
   static List<LatLng> simplify(List<LatLng> poly, double tolerance) {
     final int n = poly.length;
-    if (n < 1) throw new Exception("Polyline must have at least 1 point");
-    if (tolerance <= 0)
-      throw new Exception("Tolerance must be greater than zero");
+    if (n < 1) {
+      throw Exception("Polyline must have at least 1 point");
+    }
+    if (tolerance <= 0) {
+      throw Exception("Tolerance must be greater than zero");
+    }
 
     bool closedPolygon = isClosedPolygon(poly);
     LatLng lastPoint;
@@ -373,8 +376,8 @@ class PolyUtils {
       lastPoint = poly[poly.length - 1];
       // LatLng.latitude and .longitude are immutable, so replace the last point
       poly.remove(poly.length - 1);
-      poly.add(new LatLng(
-          lastPoint.latitude + offset, lastPoint.longitude + offset));
+      poly.add(
+          LatLng(lastPoint.latitude + offset, lastPoint.longitude + offset));
     }
 
     //  Here is is a big change code, had to use stack package from dart pub
@@ -475,8 +478,7 @@ class PolyUtils {
       return SphericalUtils.computeDistanceBetween(p, end);
     }
 
-    LatLng latLng = new LatLng(
-        start.latitude + u * (end.latitude - start.latitude),
+    LatLng latLng = LatLng(start.latitude + u * (end.latitude - start.latitude),
         start.longitude + u * (end.longitude - start.longitude));
     return SphericalUtils.computeDistanceBetween(p, latLng);
   }
@@ -527,7 +529,7 @@ class PolyUtils {
     int lastLat = 0;
     int lastLng = 0;
 
-    final StringBuffer result = new StringBuffer();
+    final StringBuffer result = StringBuffer();
 
     for (final point in path) {
       int lat = (point.latitude * 1e5).round();
