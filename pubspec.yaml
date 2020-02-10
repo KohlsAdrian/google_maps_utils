@@ -9,14 +9,4 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
-  flutter:
-    sdk: flutter
   stack: ^0.1.0
-
-dev_dependencies:
-  #flutter_test:
-  #  sdk: flutter
-
-flutter:
-
-  uses-material-design: true
