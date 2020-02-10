@@ -19,3 +19,9 @@
 
 ## 1.1.0+3
     Fixed description
+
+## 1.1.1+0
+    Fixed poly_utils.dart, all 3 functions are working as expected
+    Removed unnecessary dependencies
+    Updated example.dart
+    Added example.dart in Readme

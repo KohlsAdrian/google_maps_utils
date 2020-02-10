@@ -52,10 +52,7 @@ class MathUtils {
   /// Returns haversine(angle-in-radians).
   /// hav(x) == (1 - cos(x)) / 2 == sin(x / 2)^2.
 
-  static double hav(double x) {
-    double sinHalf = sin(x * 0.5);
-    return sinHalf * sinHalf;
-  }
+  static double hav(double x) => pow(sin(x * 0.5), 2);
 
   /// Computes inverse haversine. Has good numerical stability around 0.
   /// arcHav(x) == acos(1 - 2 * x) == 2 * asin(sqrt(x)).

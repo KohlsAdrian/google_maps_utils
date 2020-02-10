@@ -306,9 +306,7 @@ class PolyUtils {
     // Compare with half-circle == pi using sign of sin().
     return sinSumAlongTrack > 0;
   }
-
-  ///  - Warning, may not work correctly
-  ///
+  
   /// Simplifies the given poly (polyline or polygon) using the Douglas-Peucker decimation
   /// algorithm.  Increasing the tolerance will result in fewer points in the simplified polyline
   /// or polygon.
@@ -349,20 +347,20 @@ class PolyUtils {
     //  Here is is a big change code, had to use stack package from dart pub
     //  to solve this little bloc of code below, not sure if it is working
 
-    int idx;
+    int idx = 0;
     int maxIdx = 0;
     Stack<List<int>> stack = Stack();
     List<double> dists = List.generate(n, (index) => 0);
     dists[0] = 1;
     dists[n - 1] = 1;
-    double maxDist;
+    double maxDist = 0.0;
     double dist = 0.0;
-    List<int> current;
+    List<int> current = [];
 
     if (n > 2) {
       List<int> stackVal = [0, (n - 1)];
       stack.push(stackVal);
-      while (stack.top() != null && stack.top().length > 0) {
+      while (stack.isNotEmpty) {
         current = stack.pop();
         maxDist = 0;
         for (idx = current[0] + 1; idx < current[1]; ++idx) {
@@ -443,8 +441,6 @@ class PolyUtils {
     return SphericalUtils.computeDistanceBetween(p, latLng);
   }
 
-  /// - Warning, may not work correctly
-  ///
   /// Decodes an encoded path string into a sequence of LatLngs.
   static List<LatLng> decode(final String encodedPath) {
     int len = encodedPath.length;
@@ -485,8 +481,6 @@ class PolyUtils {
     return path;
   }
 
-  /// - Warning, may not work correctly
-  ///
   /// Encodes a sequence of LatLngs into an encoded path string.
 
   static String encode(final List<LatLng> path) {

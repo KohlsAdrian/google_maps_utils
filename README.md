@@ -1,8 +1,10 @@
-# google_maps_utils - An Android Google Maps Utils java project port
+# An Android Google Maps Utils original java project port for Flutter
 
 A Flutter/Dart project based on Android Google Maps Utils converted/ported to Dart/Flutter
 There are many packages that features Google Maps Utils, but none has the 3 main classes
 from the sources
+
+# Status: 3 of 78 classes converted
 
 ## How it works
 
@@ -13,25 +15,62 @@ The same rules for calculating bounds, distance between two LatLng points and ot
 
 All of the methods of current classes available are ported
 
+You can request classes for me to port as an issue, the classes ported are what most people uses
+
 ## Feature links for reasearch
 
 Main project: https://github.com/googlemaps/android-maps-utils
 Main project questions: https://stackoverflow.com/questions/tagged/android-maps-utils
 Fluttert community request: https://github.com/flutter/flutter/issues/24689
 
-# spherical_utils.dart
-    Working 100% - Used in production and working as expected
-# math_utils.dart 
-    Working 100% - Used in production and working as expected
-# poly_utils.dart
-    May be broken
+## Example *.dart
 
-## warnings:
+    import 'package:google_maps_utils/google_maps_utils.dart';
 
-# poly_utils.dart 
-    _encode
-        # Charcode conversion and StringBuffer writing may not be written correctly
-    simplify
-        # Dart does not have a class for Stacking objects, was used a pub dart for stack that is not in stable state
-    decode
-        # Charcode conversion may not be written correctly
+    void main() {
+        LatLng from = LatLng(0.0, 0.0);
+        LatLng to = LatLng(10.0, 5.0);
+        LatLng randomPoint = LatLng(-23.54545, -23.898098);
+
+        double distance = SphericalUtils.computeDistanceBetween(from, to);
+        print('Distance: $distance meters');
+
+        double heading = SphericalUtils.computeHeading(from, to);
+        print('Heading: $heading degrees');
+
+        double angle = SphericalUtils.computeAngleBetween(from, to);
+        print('Angle: $angle degrees');
+
+        double distanceToAB = PolyUtils.distanceToLine(randomPoint, from, to);
+        print('Distance to Line: $distanceToAB meters');
+
+        /// Distance: 1241932.6430813475
+        /// Heading: 26.302486345342523
+        /// Angle: 0.19493500057547358
+        /// Distance to Line: 3675538.1518512294
+
+        /// See grid path on: https://developers.google.com/maps/documentation/utilities/polylinealgorithm
+
+        List<LatLng> path = PolyUtils.decode(
+            'wjiaFz`hgQs}GmmBok@}vX|cOzKvvT`uNutJz|UgqAglAjr@ijBz]opA|Vor@}ViqEokCaiGu|@byAkjAvrMgjDj_A??ey@abD');
+
+        print('path size length: ${path.length}');
+
+        List<LatLng> simplifiedPath = PolyUtils.simplify(path, 5000);
+        String simplifiedPathEncoded = PolyUtils.encode(simplifiedPath);
+
+        print('simplified path: $simplifiedPathEncoded');
+        print('path size simplified length: ${simplifiedPath.length}');
+
+        /// And Many more
+    }
+
+### Result:
+
+###### Distance: 1241932.6430813475 meters
+###### Heading: 26.302486345342523 degrees
+###### Angle: 0.19493500057547358 degrees
+###### Distance to Line: 3675538.1518512294 meters
+###### path size length: 17
+###### simplified path: wjiaFz`hgQcjIke\t{d@|aOutJz|UokC}xWomJdjM
+###### path size simplified length: 6

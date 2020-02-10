@@ -129,8 +129,8 @@ class SphericalUtils {
   /// [heading]  The heading in degrees clockwise from north.
   static LatLng computeOffsetOrigin(
       LatLng to, double distance, double heading) {
-    heading = toRadians(heading);
     distance /= MathUtils.earthRadius;
+    heading = toRadians(heading);
     // http://lists.maptools.org/pipermail/proj/2008-October/003939.html
     double n1 = cos(distance);
     double n2 = sin(distance) * cos(heading);
