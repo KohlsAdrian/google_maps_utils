@@ -517,7 +517,7 @@ class PolyUtils {
       } while (b >= 0x1f);
       lng += (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
 
-      path.add(new LatLng(lat * 1e-5, lng * 1e-5));
+      path.add(LatLng(lat * 1e-5, lng * 1e-5));
     }
 
     return path;
