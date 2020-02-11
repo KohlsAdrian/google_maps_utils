@@ -8,8 +8,8 @@ class LatLng {
 
 /// Lightweight LatLngBounds class
 class LatLngBounds {
-  final LatLng northweat;
-  final LatLng southwest;
+  final LatLng northEast;
+  final LatLng southWest;
 
-  LatLngBounds(this.northweat, this.southwest);
+  LatLngBounds(this.northEast, this.southWest);
 }

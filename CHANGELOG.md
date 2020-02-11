@@ -31,3 +31,7 @@
 ## 1.1.1+3
     Fixed dart.pub health:
     DO use curly braces for all flow control structures
+
+## 1.1.1+4
+    Fixed LatLngBounds variable names
+    Fixed toBounds method, variables in return were inverted

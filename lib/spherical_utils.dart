@@ -79,7 +79,7 @@ class SphericalUtils {
         SphericalUtils.computeOffset(center, distanceFromCenterToCorner, 225.0);
     LatLng northeastCorner =
         SphericalUtils.computeOffset(center, distanceFromCenterToCorner, 45.0);
-    return LatLngBounds(southwestCorner, northeastCorner);
+    return LatLngBounds(northeastCorner, southwestCorner);
   }
 
   /// Returns the heading from one LatLng to another LatLng. Headings are
