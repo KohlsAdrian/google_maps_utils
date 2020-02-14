@@ -35,3 +35,8 @@
 ## 1.1.1+4
     Fixed LatLngBounds variable names
     Fixed toBounds method, variables in return were inverted
+
+## 1.2.0+0
+    Added https://pub.dev/packages/poly for replacing Google's containsLocation function for compiler reasons, google java code could not behave as expected, replacing by new algorithm from Poly package fixed the issue, thanks https://github.com/nicolascav for the feedback.
+
+    Added https://github.com/nicolascav code as example on example.dart

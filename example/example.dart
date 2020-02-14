@@ -35,5 +35,21 @@ void main() {
   print('simplified path: $simplifiedPathEncoded');
   print('path size simplified length: ${simplifiedPath.length}');
 
+
+  /// Example by: https://github.com/nicolascav
+  LatLng point = LatLng(-31.623060136389135, -60.68669021129609);
+
+  /// Triangle
+  List<LatLng> polygon = [
+    LatLng(-31.624115, -60.688734),
+    LatLng(-31.624115, -60.684657),
+    LatLng(-31.621594, -60.686717),
+    LatLng(-31.624115, -60.688734),
+  ];
+
+  bool contains =
+      PolyUtils.containsLocationPoly(point.latitude, point.longitude, polygon);
+  print('point is inside polygon?: $contains');
+
   /// And Many more
 }
