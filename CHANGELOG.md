@@ -38,6 +38,7 @@ Fixed toBounds method, variables in return were inverted
 
 ## 1.2.0+0:
 ## 1.2.0+1:
+## 1.2.0+2:
 Fixed Readme
 
 Added: https://pub.dev/packages/poly package for replacing Google's containsLocation function for compiler reasons, google java code could not behave as expected, replacing by new algorithm from Poly package fixed the issue, thanks https://github.com/nicolascav for the feedback.
