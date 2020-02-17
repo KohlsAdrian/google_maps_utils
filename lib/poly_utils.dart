@@ -1,3 +1,5 @@
+import 'dart:math';
+
 /// Copyright 2008, 2013 Google Inc.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,22 +15,13 @@
 /// limitations under the License.
 
 import 'package:google_maps_utils/google_maps_utils.dart';
-import 'package:stack/stack.dart';
 import 'package:poly/poly.dart';
-import 'dart:math';
+import 'package:stack/stack.dart';
 
 class PolyUtils {
-  /// Checks if [latitude], [longitude] Point is inside [polygon]
-  static bool containsLocationPoly(
-      double latitude, double longitude, List<LatLng> polygon) {
-    List<Point<num>> points = [];
-    polygon.forEach(
-        (pLatLng) => points.add(Point(pLatLng.latitude, pLatLng.longitude)));
-    return Polygon(points).isPointInside(Point(latitude, longitude));
-  }
-
-  static bool containsLocationPointPoly(LatLng point, List<LatLng> polygon) =>
-      containsLocationPoly(point.latitude, point.longitude, polygon);
+  /// Checks if [point] is inside [polygon]
+  static bool containsLocationPoly(Point point, List<Point> polygon) =>
+      Polygon(polygon).isPointInside(point);
 
   static final double _defaultTolerance = 0.1; // meters.
 
@@ -37,15 +30,15 @@ class PolyUtils {
   /// is true, and of Rhumb segments otherwise. The polygon edge is implicitly closed -- the
   /// closing segment between the first point and the last point is included.
 
-  static bool isLocationOnEdgeTolerance(LatLng point, List<LatLng> polygon,
-          bool geodesic, double tolerance) =>
+  static bool isLocationOnEdgeTolerance(
+          Point point, List<Point> polygon, bool geodesic, double tolerance) =>
       _isLocationOnEdgeOrPath(point, polygon, true, geodesic, tolerance);
 
-  /// Same as {@link #isLocationOnEdge(LatLng, List, bool, double)}
+  /// Same as {@link #isLocationOnEdge(Point, List, bool, double)}
   /// with a default tolerance of 0.1 meters.
 
   static bool isLocationOnEdge(
-          LatLng point, List<LatLng> polygon, bool geodesic) =>
+          Point point, List<Point> polygon, bool geodesic) =>
       isLocationOnEdgeTolerance(point, polygon, geodesic, _defaultTolerance);
 
   /// Computes whether the given point lies on or near a polyline, within a specified
@@ -53,19 +46,19 @@ class PolyUtils {
   /// is true, and of Rhumb segments otherwise. The polyline is not closed -- the closing
   /// segment between the first point and the last point is not included.
 
-  static bool isLocationOnPathTolerance(LatLng point, List<LatLng> polyline,
-          bool geodesic, double tolerance) =>
+  static bool isLocationOnPathTolerance(
+          Point point, List<Point> polyline, bool geodesic, double tolerance) =>
       _isLocationOnEdgeOrPath(point, polyline, false, geodesic, tolerance);
 
-  /// Same as {@link #isLocationOnPath(LatLng, List, bool, double)}
+  /// Same as {@link #isLocationOnPath(Point, List, bool, double)}
   /// <p>
   /// with a default tolerance of 0.1 meters.
 
   static bool isLocationOnPath(
-          LatLng point, List<LatLng> polyline, bool geodesic) =>
+          Point point, List<Point> polyline, bool geodesic) =>
       isLocationOnPathTolerance(point, polyline, geodesic, _defaultTolerance);
 
-  static bool _isLocationOnEdgeOrPath(LatLng point, List<LatLng> poly,
+  static bool _isLocationOnEdgeOrPath(Point point, List<Point> poly,
           bool closed, bool geodesic, double toleranceEarth) =>
       locationIndexOnEdgeOrPath(
           point, poly, closed, geodesic, toleranceEarth) >=
@@ -86,15 +79,15 @@ class PolyUtils {
   /// poly.size()-2 if between poly[poly.size() - 2] and poly[poly.size() - 1]
 
   static int locationIndexOnPathTolerance(
-          LatLng point, List<LatLng> poly, bool geodesic, double tolerance) =>
+          Point point, List<Point> poly, bool geodesic, double tolerance) =>
       locationIndexOnEdgeOrPath(point, poly, false, geodesic, tolerance);
 
-  /// Same as {@link #locationIndexOnPath(LatLng, List, bool, double)}
+  /// Same as {@link #locationIndexOnPath(Point, List, bool, double)}
   /// <p>
   /// with a default tolerance of 0.1 meters.
 
   static int locationIndexOnPath(
-          LatLng point, List<LatLng> polyline, bool geodesic) =>
+          Point point, List<Point> polyline, bool geodesic) =>
       locationIndexOnPathTolerance(
           point, polyline, geodesic, _defaultTolerance);
 
@@ -113,7 +106,7 @@ class PolyUtils {
   /// ...,
   /// poly.size()-2 if between poly[poly.size() - 2] and poly[poly.size() - 1]
 
-  static int locationIndexOnEdgeOrPath(LatLng point, List<LatLng> poly,
+  static int locationIndexOnEdgeOrPath(Point point, List<Point> poly,
       bool closed, bool geodesic, double toleranceEarth) {
     int size = poly.length;
     if (size == 0) {
@@ -122,16 +115,16 @@ class PolyUtils {
 
     double tolerance = toleranceEarth / MathUtils.earthRadius;
     double havTolerance = MathUtils.hav(tolerance);
-    double lat3 = SphericalUtils.toRadians(point.latitude);
-    double lng3 = SphericalUtils.toRadians(point.longitude);
-    LatLng prev = poly[closed ? size - 1 : 0];
-    double lat1 = SphericalUtils.toRadians(prev.latitude);
-    double lng1 = SphericalUtils.toRadians(prev.longitude);
+    double lat3 = SphericalUtils.toRadians(point.x);
+    double lng3 = SphericalUtils.toRadians(point.y);
+    Point prev = poly[closed ? size - 1 : 0];
+    double lat1 = SphericalUtils.toRadians(prev.x);
+    double lng1 = SphericalUtils.toRadians(prev.y);
     int idx = 0;
     if (geodesic) {
       for (final point2 in poly) {
-        double lat2 = SphericalUtils.toRadians(point2.latitude);
-        double lng2 = SphericalUtils.toRadians(point2.longitude);
+        double lat2 = SphericalUtils.toRadians(point2.x);
+        double lng2 = SphericalUtils.toRadians(point2.y);
         if (_isOnSegmentGC(lat1, lng1, lat2, lng2, lat3, lng3, havTolerance)) {
           return max(0, idx - 1);
         }
@@ -151,12 +144,12 @@ class PolyUtils {
       double y3 = MathUtils.mercator(lat3);
       List<double> xTry = List.generate(3, (index) => 0);
       for (final point2 in poly) {
-        double lat2 = SphericalUtils.toRadians(point2.latitude);
+        double lat2 = SphericalUtils.toRadians(point2.x);
         double y2 = MathUtils.mercator(lat2);
-        double lng2 = SphericalUtils.toRadians(point2.longitude);
+        double lng2 = SphericalUtils.toRadians(point2.y);
         if (max(lat1, lat2) >= minAcceptable &&
             min(lat1, lat2) <= maxAcceptable) {
-          // We offset longitudes by -lng1; the implicit x1 is 0.
+          // We offset ys by -lng1; the implicit x1 is 0.
           double x2 = MathUtils.wrap(lng2 - lng1, -pi, pi);
           double x3Base = MathUtils.wrap(lng3 - lng1, -pi, pi);
           xTry[0] = x3Base;
@@ -251,19 +244,19 @@ class PolyUtils {
   /// or polygon.
   /// <p>
   /// When the providing a polygon as input, the first and last point of the list MUST have the
-  /// same latitude and longitude (i.e., the polygon must be closed).  If the input polygon is not
+  /// same x and y (i.e., the polygon must be closed).  If the input polygon is not
   /// closed, the resulting polygon may not be fully simplified.
   /// <p>
   /// The time complexity of Douglas-Peucker is O(n^2), so take care that you do not call this
   /// algorithm too frequently in your code.
   ///
   /// [poly]      polyline or polygon to be simplified.  Polygon should be closed (i.e.,
-  ///                  first and last points should have the same latitude and longitude).
+  ///                  first and last points should have the same x and y).
   /// [tolerance] in meters.  Increasing the tolerance will result in fewer points in the
   ///                  simplified poly.
   /// [return] a simplified poly produced by the Douglas-Peucker algorithm
 
-  static List<LatLng> simplify(List<LatLng> poly, double tolerance) {
+  static List<Point> simplify(List<Point> poly, double tolerance) {
     final int n = poly.length;
     if (n < 1) {
       throw Exception("Polyline must have at least 1 point");
@@ -273,17 +266,16 @@ class PolyUtils {
     }
 
     bool closedPolygon = isClosedPolygon(poly);
-    LatLng lastPoint;
+    Point lastPoint;
 
     // Check if the provided poly is a closed polygon
     if (closedPolygon) {
       // Add a small offset to the last point for Douglas-Peucker on polygons (see #201)
       final double offset = 0.00000000001;
       lastPoint = poly[poly.length - 1];
-      // LatLng.latitude and .longitude are immutable, so replace the last point
+      // Point.x and .y are immutable, so replace the last point
       poly.remove(poly.length - 1);
-      poly.add(
-          LatLng(lastPoint.latitude + offset, lastPoint.longitude + offset));
+      poly.add(Point(lastPoint.x + offset, lastPoint.y + offset));
     }
 
     //  Here is is a big change code, had to use stack package from dart pub
@@ -330,7 +322,7 @@ class PolyUtils {
 
     // Generate the simplified line
     idx = 0;
-    List<LatLng> simplifiedLine = List();
+    List<Point> simplifiedLine = List();
     for (final l in poly) {
       if (dists[idx] != 0) {
         simplifiedLine.add(l);
@@ -347,9 +339,9 @@ class PolyUtils {
   /// [return] true if the provided list of points is a closed polygon (i.e., the first and last
   /// points are the same), and false if it is not
 
-  static bool isClosedPolygon(List<LatLng> poly) {
-    LatLng firstPoint = poly[0];
-    LatLng lastPoint = poly[poly.length - 1];
+  static bool isClosedPolygon(List<Point> poly) {
+    Point firstPoint = poly[0];
+    Point lastPoint = poly[poly.length - 1];
     return firstPoint == lastPoint;
   }
 
@@ -361,17 +353,17 @@ class PolyUtils {
   /// [return] the distance in meters (assuming spherical earth)
 
   static double distanceToLine(
-      final LatLng p, final LatLng start, final LatLng end) {
+      final Point p, final Point start, final Point end) {
     if (start == end) {
       return SphericalUtils.computeDistanceBetween(end, p);
     }
 
-    final double s0lat = SphericalUtils.toRadians(p.latitude);
-    final double s0lng = SphericalUtils.toRadians(p.longitude);
-    final double s1lat = SphericalUtils.toRadians(start.latitude);
-    final double s1lng = SphericalUtils.toRadians(start.longitude);
-    final double s2lat = SphericalUtils.toRadians(end.latitude);
-    final double s2lng = SphericalUtils.toRadians(end.longitude);
+    final double s0lat = SphericalUtils.toRadians(p.x);
+    final double s0lng = SphericalUtils.toRadians(p.y);
+    final double s1lat = SphericalUtils.toRadians(start.x);
+    final double s1lng = SphericalUtils.toRadians(start.y);
+    final double s2lat = SphericalUtils.toRadians(end.x);
+    final double s2lng = SphericalUtils.toRadians(end.y);
 
     double s2s1lat = s2lat - s1lat;
     double s2s1lng = s2lng - s1lng;
@@ -384,18 +376,18 @@ class PolyUtils {
       return SphericalUtils.computeDistanceBetween(p, end);
     }
 
-    LatLng latLng = LatLng(start.latitude + u * (end.latitude - start.latitude),
-        start.longitude + u * (end.longitude - start.longitude));
+    Point latLng =
+        Point(start.x + u * (end.x - start.x), start.y + u * (end.y - start.y));
     return SphericalUtils.computeDistanceBetween(p, latLng);
   }
 
   /// Decodes an encoded path string into a sequence of LatLngs.
-  static List<LatLng> decode(final String encodedPath) {
+  static List<Point> decode(final String encodedPath) {
     int len = encodedPath.length;
 
     // For speed we preallocate to an upper bound on the final length, then
     // truncate the array before returning.
-    final List<LatLng> path = [];
+    final List<Point> path = [];
     int index = 0;
     int lat = 0;
     int lng = 0;
@@ -423,7 +415,7 @@ class PolyUtils {
       } while (b >= 0x1f);
       lng += (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
 
-      path.add(LatLng(lat * 1e-5, lng * 1e-5));
+      path.add(Point(lat * 1e-5, lng * 1e-5));
     }
 
     return path;
@@ -431,15 +423,15 @@ class PolyUtils {
 
   /// Encodes a sequence of LatLngs into an encoded path string.
 
-  static String encode(final List<LatLng> path) {
+  static String encode(final List<Point> path) {
     int lastLat = 0;
     int lastLng = 0;
 
     final StringBuffer result = StringBuffer();
 
     for (final point in path) {
-      int lat = (point.latitude * 1e5).round();
-      int lng = (point.longitude * 1e5).round();
+      int lat = (point.x * 1e5).round();
+      int lng = (point.y * 1e5).round();
 
       int dLat = lat - lastLat;
       int dLng = lng - lastLng;

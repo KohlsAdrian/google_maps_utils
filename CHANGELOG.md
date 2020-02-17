@@ -10,7 +10,7 @@ Fixed Readme
 
 ## 1.1.0+1:
 Added Changelog and formated all files, updated stack package from ^0.0.1 to ^0.1.0
-Removed google maps package, replaced for created Lightweight LatLng and LatLngBounds classes (lat_lng.dart)
+Removed google maps package, replaced for created Lightweight Point and LatLngBounds classes (lat_lng.dart)
 Fixed docs in all classes
 Added example.dart
 
@@ -44,3 +44,6 @@ Fixed Readme
 Added: https://pub.dev/packages/poly package for replacing Google's containsLocation function for compiler reasons, google java code could not behave as expected, replacing by new algorithm from Poly package fixed the issue, thanks https://github.com/nicolascav for the feedback.
 
 Added https://github.com/nicolascav code as example on example.dart
+
+## 1.2.0+3:
+Replaced LatLng for Point class, kept LatLngBounds class

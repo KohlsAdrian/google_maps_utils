@@ -1,9 +1,10 @@
 import 'package:google_maps_utils/google_maps_utils.dart';
+import 'package:poly/poly.dart';
 
 void main() {
-  LatLng from = LatLng(0.0, 0.0);
-  LatLng to = LatLng(10.0, 5.0);
-  LatLng randomPoint = LatLng(-23.54545, -23.898098);
+  Point from = Point(0.0, 0.0);
+  Point to = Point(10.0, 5.0);
+  Point randomPoint = Point(-23.54545, -23.898098);
 
   double distance = SphericalUtils.computeDistanceBetween(from, to);
   print('Distance: $distance meters');
@@ -24,31 +25,29 @@ void main() {
 
   /// See grid path on: https://developers.google.com/maps/documentation/utilities/polylinealgorithm
 
-  List<LatLng> path = PolyUtils.decode(
+  List<Point> path = PolyUtils.decode(
       'wjiaFz`hgQs}GmmBok@}vX|cOzKvvT`uNutJz|UgqAglAjr@ijBz]opA|Vor@}ViqEokCaiGu|@byAkjAvrMgjDj_A??ey@abD');
 
   print('path size length: ${path.length}');
 
-  List<LatLng> simplifiedPath = PolyUtils.simplify(path, 5000);
+  List<Point> simplifiedPath = PolyUtils.simplify(path, 5000);
   String simplifiedPathEncoded = PolyUtils.encode(simplifiedPath);
 
   print('simplified path: $simplifiedPathEncoded');
   print('path size simplified length: ${simplifiedPath.length}');
 
-
   /// Example by: https://github.com/nicolascav
-  LatLng point = LatLng(-31.623060136389135, -60.68669021129609);
+  Point point = Point(-31.623060136389135, -60.68669021129609);
 
   /// Triangle
-  List<LatLng> polygon = [
-    LatLng(-31.624115, -60.688734),
-    LatLng(-31.624115, -60.684657),
-    LatLng(-31.621594, -60.686717),
-    LatLng(-31.624115, -60.688734),
+  List<Point> polygon = [
+    Point(-31.624115, -60.688734),
+    Point(-31.624115, -60.684657),
+    Point(-31.621594, -60.686717),
+    Point(-31.624115, -60.688734),
   ];
 
-  bool contains =
-      PolyUtils.containsLocationPoly(point.latitude, point.longitude, polygon);
+  bool contains = PolyUtils.containsLocationPoly(point, polygon);
   print('point is inside polygon?: $contains');
 
   /// And Many more
