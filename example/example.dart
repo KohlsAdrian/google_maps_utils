@@ -1,7 +1,7 @@
 import 'package:google_maps_utils/google_maps_utils.dart';
 import 'package:poly/poly.dart';
 
-void main() {
+void main() async {
   Point from = Point(0.0, 0.0);
   Point to = Point(10.0, 5.0);
   Point randomPoint = Point(-23.54545, -23.898098);
@@ -49,6 +49,14 @@ void main() {
 
   bool contains = PolyUtils.containsLocationPoly(point, polygon);
   print('point is inside polygon?: $contains');
+
+  try {
+    String osrmShape =
+        'nNVQggXWUIIAAAAAcQAAAAAAAADLEAAAAAAAAPjfLkIAAAAACK3QRAAAAABxAAAAAAAAAMsQAACRcAAAd-l-_WEfof5QkMr-vQCa_QAAPwCgjPJo';
+    PolyUtils.decode(osrmShape);
+  } catch (e) {
+    print(e);
+  }
 
   /// And Many more
 }

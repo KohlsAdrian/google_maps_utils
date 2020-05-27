@@ -47,3 +47,10 @@ Added https://github.com/nicolascav code as example on example.dart
 
 ## 1.2.0+3:
 Replaced LatLng for Point class, kept LatLngBounds class
+
+## 1.2.1+0
+Fixed Poly simplify, merge PR thanks to https://github.com/0oL
+
+## 1.2.1+1
+Added all cardinal directions
+Removed PT-BR exclusive function translation from cardinals

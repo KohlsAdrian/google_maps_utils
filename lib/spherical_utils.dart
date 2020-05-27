@@ -32,49 +32,23 @@ class SphericalUtils {
     var val = ((angle / 22.5) + 0.5).floor();
     var arr = [
       'N',
-      //'NNE',
+      'NNE',
       'NE',
-      //'ENE',
+      'ENE',
       'E',
-      //'ESE',
+      'ESE',
       'SE',
-      //'SSE',
+      'SSE',
       'S',
-      //'SSW',
+      'SSW',
       'SW',
-      //'WSW',
+      'WSW',
       'W',
-      //'WNW',
+      'WNW',
       'NW',
-      //'NNW'
+      'NNW',
     ];
-    //16
-    return arr[(val % 8)];
-  }
-
-  /// Get Translation from North-American Direction to PT-BR direction
-  static String getDirectionName(String direction) {
-    //4 basic direction
-    if (direction == 'N') {
-      direction = 'Norte';
-    } else if (direction == 'S') {
-      direction = 'Sul';
-    } else if (direction == 'E') {
-      direction = 'Leste';
-    } else if (direction == 'W') {
-      direction = 'Oeste';
-    }
-    //4+ direction
-    else if (direction == 'NE') {
-      direction = 'Nordeste';
-    } else if (direction == 'SE') {
-      direction = 'Sudeste';
-    } else if (direction == 'SW') {
-      direction = 'Sudoeste';
-    } else if (direction == 'NW') {
-      direction = 'Noroeste';
-    }
-    return direction;
+    return arr[(val % 16)];
   }
 
   /// see: https://stackoverflow.com/a/31029389/3182210
