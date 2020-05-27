@@ -274,7 +274,7 @@ class PolyUtils {
       final double offset = 0.00000000001;
       lastPoint = poly[poly.length - 1];
       // Point.x and .y are immutable, so replace the last point
-      poly.remove(poly.length - 1);
+      poly.removeAt(poly.length - 1);
       poly.add(Point(lastPoint.x + offset, lastPoint.y + offset));
     }
 
@@ -316,7 +316,7 @@ class PolyUtils {
 
     if (closedPolygon) {
       // Replace last point w/ offset with the original last point to re-close the polygon
-      poly.remove(poly.length - 1);
+      poly.removeAt(poly.length - 1);
       poly.add(lastPoint);
     }
 
