@@ -19,6 +19,8 @@ import 'package:poly/poly.dart';
 import 'package:stack/stack.dart';
 
 class PolyUtils {
+  PolyUtils._();
+
   /// Checks if [point] is inside [polygon]
   static bool containsLocationPoly(Point point, List<Point> polygon) =>
       Polygon(polygon).isPointInside(point);

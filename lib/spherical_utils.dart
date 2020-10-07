@@ -12,16 +12,19 @@
 ///  See the License for the specific language governing permissions and
 ///  limitations under the License.
 import 'dart:math';
+
 import 'package:google_maps_utils/google_maps_utils.dart';
 
-class LatLngBounds {
+class GMULatLngBounds {
   final Point northEast;
   final Point southWest;
 
-  LatLngBounds(this.northEast, this.southWest);
+  GMULatLngBounds(this.northEast, this.southWest);
 }
 
 class SphericalUtils {
+  SphericalUtils._();
+
   ///  Missing simple conversions from Math class
   ///  Code from: https://github.com/dart-lang/sdk/issues/4211#issue-84512743
   static num toRadians(num deg) => deg * (pi / 180.0);
@@ -52,14 +55,14 @@ class SphericalUtils {
   }
 
   /// see: https://stackoverflow.com/a/31029389/3182210
-  static LatLngBounds toBounds(double x, double y, double radiusInMeters) {
+  static GMULatLngBounds toBounds(double x, double y, double radiusInMeters) {
     Point center = Point(x, y);
     double distanceFromCenterToCorner = radiusInMeters * sqrt(2.0);
     Point southwestCorner =
         SphericalUtils.computeOffset(center, distanceFromCenterToCorner, 225.0);
     Point northeastCorner =
         SphericalUtils.computeOffset(center, distanceFromCenterToCorner, 45.0);
-    return LatLngBounds(northeastCorner, southwestCorner);
+    return GMULatLngBounds(northeastCorner, southwestCorner);
   }
 
   /// Returns the heading from one Point to another Point. Headings are

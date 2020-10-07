@@ -14,6 +14,8 @@ import 'dart:math';
 /// Utility functions that are used my both PolyUtil and SphericalUtil.
 
 class MathUtils {
+  MathUtils._();
+
   /// The earth's radius, in meters.
   /// Mean radius as defined by IUGG.
 
