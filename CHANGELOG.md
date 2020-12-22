@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.2+1
+
+Fixed: 'List' is deprecated and shouldn't be used.
+
+Updated poly stack package
+
+
 ## 1.2.2+0
 
 Fixed changelog order for new releases, left unordered for old releases

@@ -324,7 +324,7 @@ class PolyUtils {
 
     // Generate the simplified line
     idx = 0;
-    List<Point> simplifiedLine = List();
+    List<Point> simplifiedLine = [];
     for (final l in poly) {
       if (dists[idx] != 0) {
         simplifiedLine.add(l);

@@ -51,9 +51,9 @@ void main() async {
   print('point is inside polygon?: $contains');
 
   try {
-    String osrmShape =
-        'nNVQggXWUIIAAAAAcQAAAAAAAADLEAAAAAAAAPjfLkIAAAAACK3QRAAAAABxAAAAAAAAAMsQAACRcAAAd-l-_WEfof5QkMr-vQCa_QAAPwCgjPJo';
-    PolyUtils.decode(osrmShape);
+    String osrmShape = 'ohr~Fn{mvOve@vqA_GmlBeJqwDkEceI~qDwIzvDpqR';
+    final decoded = PolyUtils.decode(osrmShape);
+    print('shape decoded: $decoded');
   } catch (e) {
     print(e);
   }
