@@ -29,37 +29,38 @@ class MathUtils {
   /// Wraps the given value into the inclusive-exclusive interval between min and max.
 
   /// [n]   The value to wrap.
+  /// 
   /// [min] The minimum.
+  /// 
   /// [max] The maximum.
-
   static double wrap(double n, double min, double max) =>
       (n >= min && n < max) ? n : (mod(n - min, max - min) + min);
 
   /// Returns the non-negative remainder of x / m.
-
+  /// 
   /// [x] The operand.
+  /// 
   /// [m] The modulus.
-
   static double mod(double x, double m) => ((x % m) + m) % m;
 
   /// Returns mercator Y corresponding to latitude.
+  /// 
   /// See http://en.wikipedia.org/wiki/Mercator_projection .
-
   static double mercator(double lat) => log(tan(lat * 0.5 + pi / 4));
 
   /// Returns latitude from mercator Y.
-
   static double inverseMercator(double y) => 2 * atan(exp(y)) - pi / 2;
 
   /// Returns haversine(angle-in-radians).
+  /// 
   /// hav(x) == (1 - cos(x)) / 2 == sin(x / 2)^2.
-
   static double hav(double x) => pow(sin(x * 0.5), 2);
 
   /// Computes inverse haversine. Has good numerical stability around 0.
+  /// 
   /// arcHav(x) == acos(1 - 2 * x) == 2 * asin(sqrt(x)).
+  /// 
   /// The argument must be in [0, 1], and the result is positive.
-
   static double arcHav(double x) => 2 * asin(sqrt(x));
 
   // Given h==hav(x), returns sin(abs(x)).
@@ -79,7 +80,6 @@ class MathUtils {
   }
 
   /// Returns hav() of distance from (lat1, lng1) to (lat2, lng2) on the unit sphere.
-
   static double havDistance(double lat1, double lat2, double dLng) =>
       hav(lat1 - lat2) + hav(dLng) * cos(lat1) * cos(lat2);
 }

@@ -70,16 +70,21 @@ class PolyUtils {
   /// The polyline is not closed -- the closing segment between the first point and the last point is not included.
   ///
   /// [point]     our needle
+  /// 
   /// [poly]      our haystack
+  /// 
   /// [geodesic]  the polyline is composed of great circle segments if geodesic
   ///                  is true, and of Rhumb segments otherwise
+  /// 
   /// [tolerance] tolerance (in meters)
+  /// 
   /// [return] -1 if point does not lie on or near the polyline.
+  /// 
   /// 0 if point is between poly[0] and poly[1] (inclusive),
+  /// 
   /// 1 if between poly[1] and poly[2],
-  /// ...,
+  /// 
   /// poly.size()-2 if between poly[poly.size() - 2] and poly[poly.size() - 1]
-
   static int locationIndexOnPathTolerance(
           Point point, List<Point> poly, bool geodesic, double tolerance) =>
       locationIndexOnEdgeOrPath(point, poly, false, geodesic, tolerance);
@@ -87,7 +92,6 @@ class PolyUtils {
   /// Same as {@link #locationIndexOnPath(Point, List, bool, double)}
   /// <p>
   /// with a default tolerance of 0.1 meters.
-
   static int locationIndexOnPath(
           Point point, List<Point> polyline, bool geodesic) =>
       locationIndexOnPathTolerance(
@@ -97,17 +101,23 @@ class PolyUtils {
   /// If closed, the closing segment between the last and first points of the polyline is not considered.
   ///
   /// [point]          our needle
+  /// 
   /// [poly]           our haystack
+  /// 
   /// [closed]         whether the polyline should be considered closed by a segment connecting the last point back to the first one
+  /// 
   /// [geodesic]       the polyline is composed of great circle segments if geodesic
   ///                       is true, and of Rhumb segments otherwise
+  /// 
   /// [toleranceEarth] tolerance (in meters)
+  /// 
   /// [return] -1 if point does not lie on or near the polyline.
+  /// 
   /// 0 if point is between poly[0] and poly[1] (inclusive),
+  /// 
   /// 1 if between poly[1] and poly[2],
-  /// ...,
+  /// 
   /// poly.size()-2 if between poly[poly.size() - 2] and poly[poly.size() - 1]
-
   static int locationIndexOnEdgeOrPath(Point point, List<Point> poly,
       bool closed, bool geodesic, double toleranceEarth) {
     int size = poly.length;
@@ -184,7 +194,6 @@ class PolyUtils {
 
   /// Returns sin(initial bearing from (lat1,lng1) to (lat3,lng3) minus initial bearing
   /// from (lat1, lng1) to (lat2,lng2)).
-
   static double _sinDeltaBearing(double lat1, double lng1, double lat2,
       double lng2, double lat3, double lng3) {
     double sinLat1 = sin(lat1);
@@ -254,10 +263,11 @@ class PolyUtils {
   ///
   /// [poly]      polyline or polygon to be simplified.  Polygon should be closed (i.e.,
   ///                  first and last points should have the same x and y).
+  /// 
   /// [tolerance] in meters.  Increasing the tolerance will result in fewer points in the
   ///                  simplified poly.
+  /// 
   /// [return] a simplified poly produced by the Douglas-Peucker algorithm
-
   static List<Point> simplify(List<Point> poly, double tolerance) {
     final int n = poly.length;
     if (n < 1) {
@@ -338,6 +348,7 @@ class PolyUtils {
   /// points are the same), and false if it is not
   ///
   /// [poly] polyline or polygon
+  /// 
   /// [return] true if the provided list of points is a closed polygon (i.e., the first and last
   /// points are the same), and false if it is not
 
@@ -350,10 +361,12 @@ class PolyUtils {
   /// Computes the distance on the sphere between the point p and the line segment start to end.
   ///
   /// [p]     the point to be measured
+  /// 
   /// [start] the beginning of the line segment
+  /// 
   /// [end]   the end of the line segment
+  /// 
   /// [return] the distance in meters (assuming spherical earth)
-
   static double distanceToLine(
       final Point p, final Point start, final Point end) {
     if (start == end) {

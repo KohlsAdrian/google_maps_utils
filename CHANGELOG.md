@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.0
+
+* Added toBoundsFromPoints (Request by <https://github.com/adam-ashored>)
+
+* Added centerFromLatLngBounds
+
+* Fixed some docs
+
 ## 1.2.2+1
 
 Fixed: 'List' is deprecated and shouldn't be used.

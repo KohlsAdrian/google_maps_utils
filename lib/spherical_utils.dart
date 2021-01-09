@@ -65,6 +65,50 @@ class SphericalUtils {
     return GMULatLngBounds(northeastCorner, southwestCorner);
   }
 
+  /// Convert a list of latitudes and longitudes to an object of boundaries
+  ///
+  /// see: https://github.com/flutter/flutter/issues/36653#issuecomment-525288053
+  ///
+  /// [return] The boundaries from the list of points
+  static GMULatLngBounds toBoundsFromPoints(List<Point> points) {
+    double x0, x1, y0, y1;
+    points.forEach((point) {
+      if (x0 == null) {
+        x0 = x1 = point.x;
+        y0 = y1 = point.y;
+      } else {
+        if (point.x > x1) x1 = point.x;
+        if (point.x < x0) x0 = point.x;
+        if (point.y > y1) y1 = point.y;
+        if (point.y < y0) y0 = point.y;
+      }
+    });
+
+    Point northEast = Point(x1, y1);
+    Point southWest = Point(x0, y0);
+
+    GMULatLngBounds gmuLatLngBounds = GMULatLngBounds(northEast, southWest);
+
+    return gmuLatLngBounds;
+  }
+
+  /// Calculate the center of the boundaries to a Point in latitude and longitude
+  /// 
+  /// see: https://stackoverflow.com/a/30859321/3182210
+  /// 
+  /// [return] the Point representing the center of the [gmuLatLngBounds]
+  static Point centerFromLatLngBounds(GMULatLngBounds gmuLatLngBounds) {
+    Point northEast = gmuLatLngBounds.northEast;
+    Point southWest = gmuLatLngBounds.southWest;
+
+    double centerLatitudeBound = (northEast.x + southWest.x) / 2;
+    double centerLongitudeBound = (northEast.y + southWest.y) / 2;
+
+    Point center = Point(centerLatitudeBound, centerLongitudeBound);
+
+    return center;
+  }
+
   /// Returns the heading from one Point to another Point. Headings are
   /// expressed in degrees clockwise from North within the range [-180,180).
   ///
@@ -86,7 +130,9 @@ class SphericalUtils {
   /// in the specified heading (expressed in degrees clockwise from north).
   ///
   /// [from]     The Point from which to start.
+  /// 
   /// [distance] The distance to travel.
+  /// 
   /// [heading]  The heading in degrees clockwise from north.
   static Point computeOffset(Point from, double distance, double heading) {
     distance /= MathUtils.earthRadius;
@@ -111,7 +157,9 @@ class SphericalUtils {
   /// available.
   ///
   /// [to]       The destination Point.
+  /// 
   /// [distance] The distance travelled, in meters.
+  /// 
   /// [heading]  The heading in degrees clockwise from north.
   static Point computeOffsetOrigin(Point to, double distance, double heading) {
     distance /= MathUtils.earthRadius;
@@ -155,8 +203,11 @@ class SphericalUtils {
   /// origin Point and the destination Point.
   ///
   /// [from]     The Point from which to start.
+  /// 
   /// [to]       The Point toward which to travel.
+  /// 
   /// [fraction] A fraction of the distance to travel.
+  /// 
   /// [return] The interpolated Point.
   static Point interpolate(Point from, Point to, double fraction) {
     // http://en.wikipedia.org/wiki/Slerp
@@ -224,7 +275,9 @@ class SphericalUtils {
   }
 
   /// Returns the area of a closed path on Earth.
+  /// 
   ///  [path] A closed path.
+  /// 
   ///  [return] The path's area in square meters.
   static double computeArea(List<Point> path) => computeSignedArea(path).abs();
 
@@ -233,6 +286,7 @@ class SphericalUtils {
   /// 'inside' is the surface that does not contain the South Pole.
   ///
   /// [path] A closed path.
+  /// 
   /// [return] The loop's area in square meters.
   static double computeSignedArea(List<Point> path) =>
       SphericalUtils.computeSignedAreaTest(path, MathUtils.earthRadius);
@@ -265,7 +319,9 @@ class SphericalUtils {
   /// Returns the signed area of a triangle which has North Pole as a vertex.
   /// Formula derived from 'Area of a spherical triangle given two edges and the included angle'
   /// as per 'Spherical Trigonometry' by Todhunter, page 71, section 103, point 2.
+  /// 
   /// See http://books.google.com/books?id=3uBHAAAAIAAJ&pg=PA71
+  /// 
   /// The arguments named 'tan' are tan((pi/2 - x)/2).
   static double polarTriangleArea(
       double tan1, double lng1, double tan2, double lng2) {
