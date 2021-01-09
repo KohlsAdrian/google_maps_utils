@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0+1
+
+* dartfmt -w .
+
 ## 1.3.0
 
 * Added toBoundsFromPoints (Request by <https://github.com/adam-ashored>)

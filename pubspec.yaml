@@ -3,7 +3,7 @@ description:
   Initial version comes with the 3 main Classes. SphericalUtils, MathUtils and PolyUtils, calculating bounds, distances headings and many more.
 
 homepage: https://github.com/KohlsAdrian/google_maps_utils/
-version: 1.3.0
+version: 1.3.0+1
 
 environment:
   sdk: ">=2.7.2 <3.0.0"
