@@ -54,7 +54,7 @@ class MathUtils {
   /// Returns haversine(angle-in-radians).
   ///
   /// hav(x) == (1 - cos(x)) / 2 == sin(x / 2)^2.
-  static double hav(double x) => pow(sin(x * 0.5), 2);
+  static double hav(double x) => pow(sin(x * 0.5), 2).toDouble();
 
   /// Computes inverse haversine. Has good numerical stability around 0.
   ///

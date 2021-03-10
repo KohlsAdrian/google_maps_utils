@@ -15,15 +15,36 @@ import 'dart:math';
 /// limitations under the License.
 
 import 'package:google_maps_utils/google_maps_utils.dart';
-import 'package:poly/poly.dart';
-import 'package:stack/stack.dart';
+import 'package:google_maps_utils/utils/stack.dart';
 
 class PolyUtils {
-  PolyUtils._();
 
   /// Checks if [point] is inside [polygon]
-  static bool containsLocationPoly(Point point, List<Point> polygon) =>
-      Polygon(polygon).isPointInside(point);
+  static bool containsLocationPoly(Point point, List<Point> polygon) {
+    num ax = 0;
+    num ay = 0;
+    num bx = polygon[polygon.length - 1].x - point.x;
+    num by = polygon[polygon.length - 1].y - point.y;
+    int depth = 0;
+
+    for (int i = 0; i < polygon.length; i++) {
+      ax = bx;
+      ay = by;
+      bx = polygon[i].x - point.x;
+      by = polygon[i].y - point.y;
+
+      if (ay < 0 && by < 0) continue; // both "up" or both "down"
+      if (ay > 0 && by > 0) continue; // both "up" or both "down"
+      if (ax < 0 && bx < 0) continue; // both points on left
+
+      num lx = ax - ay * (bx - ax) / (by - ay);
+
+      if (lx == 0) return true; // point on edge
+      if (lx > 0) depth++;
+    }
+
+    return (depth & 1) == 1;
+  }
 
   static final double _defaultTolerance = 0.1; // meters.
 
@@ -127,16 +148,16 @@ class PolyUtils {
 
     double tolerance = toleranceEarth / MathUtils.earthRadius;
     double havTolerance = MathUtils.hav(tolerance);
-    double lat3 = SphericalUtils.toRadians(point.x);
-    double lng3 = SphericalUtils.toRadians(point.y);
+    double lat3 = SphericalUtils.toRadians(point.x).toDouble();
+    double lng3 = SphericalUtils.toRadians(point.y).toDouble();
     Point prev = poly[closed ? size - 1 : 0];
-    double lat1 = SphericalUtils.toRadians(prev.x);
-    double lng1 = SphericalUtils.toRadians(prev.y);
+    double lat1 = SphericalUtils.toRadians(prev.x).toDouble();
+    double lng1 = SphericalUtils.toRadians(prev.y).toDouble();
     int idx = 0;
     if (geodesic) {
       for (final point2 in poly) {
-        double lat2 = SphericalUtils.toRadians(point2.x);
-        double lng2 = SphericalUtils.toRadians(point2.y);
+        double lat2 = SphericalUtils.toRadians(point2.x).toDouble();
+        double lng2 = SphericalUtils.toRadians(point2.y).toDouble();
         if (_isOnSegmentGC(lat1, lng1, lat2, lng2, lat3, lng3, havTolerance)) {
           return max(0, idx - 1);
         }
@@ -156,9 +177,9 @@ class PolyUtils {
       double y3 = MathUtils.mercator(lat3);
       List<double> xTry = List.generate(3, (index) => 0);
       for (final point2 in poly) {
-        double lat2 = SphericalUtils.toRadians(point2.x);
+        double lat2 = SphericalUtils.toRadians(point2.x).toDouble();
         double y2 = MathUtils.mercator(lat2);
-        double lng2 = SphericalUtils.toRadians(point2.y);
+        double lng2 = SphericalUtils.toRadians(point2.y).toDouble();
         if (max(lat1, lat2) >= minAcceptable &&
             min(lat1, lat2) <= maxAcceptable) {
           // We offset ys by -lng1; the implicit x1 is 0.
@@ -353,6 +374,7 @@ class PolyUtils {
   /// points are the same), and false if it is not
 
   static bool isClosedPolygon(List<Point> poly) {
+    if (poly.isEmpty) return false;
     Point firstPoint = poly[0];
     Point lastPoint = poly[poly.length - 1];
     return firstPoint == lastPoint;
@@ -367,8 +389,7 @@ class PolyUtils {
   /// [end]   the end of the line segment
   ///
   /// [return] the distance in meters (assuming spherical earth)
-  static double distanceToLine(
-      final Point p, final Point start, final Point end) {
+  static double distanceToLine(final Point p, final Point start, final Point end) {
     if (start == end) {
       return SphericalUtils.computeDistanceBetween(end, p);
     }

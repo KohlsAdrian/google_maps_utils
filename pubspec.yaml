@@ -6,8 +6,4 @@ homepage: https://github.com/KohlsAdrian/google_maps_utils/
 version: 1.3.0+1
 
 environment:
-  sdk: ">=2.7.2 <3.0.0"
-
-dependencies:
-  stack: ^0.1.3
-  poly: ^1.0.7+2
+  sdk: ">=2.12.0 <3.0.0"

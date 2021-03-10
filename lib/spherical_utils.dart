@@ -27,8 +27,8 @@ class SphericalUtils {
 
   ///  Missing simple conversions from Math class
   ///  Code from: https://github.com/dart-lang/sdk/issues/4211#issue-84512743
-  static num toRadians(num deg) => deg * (pi / 180.0);
-  static num toDegrees(num rad) => rad * (180.0 / pi);
+  static double toRadians(num deg) => deg * (pi / 180.0);
+  static double toDegrees(num rad) => rad * (180.0 / pi);
 
   /// see: https://stackoverflow.com/a/25867068/3182210
   static String getCardinal(double angle) {
@@ -71,17 +71,17 @@ class SphericalUtils {
   ///
   /// [return] The boundaries from the list of points
   static GMULatLngBounds toBoundsFromPoints(List<Point> points) {
+
+    if (points.isEmpty) throw Exception("Points cannot be empty");
+
     double x0, x1, y0, y1;
+    x0 = x1 = points.first.x.toDouble();
+    y0 = y1 = points.first.y.toDouble();
     points.forEach((point) {
-      if (x0 == null) {
-        x0 = x1 = point.x;
-        y0 = y1 = point.y;
-      } else {
-        if (point.x > x1) x1 = point.x;
-        if (point.x < x0) x0 = point.x;
-        if (point.y > y1) y1 = point.y;
-        if (point.y < y0) y0 = point.y;
-      }
+      if (point.x > x1) x1 = point.x.toDouble();
+      if (point.x < x0) x0 = point.x.toDouble();
+      if (point.y > y1) y1 = point.y.toDouble();
+      if (point.y < y0) y0 = point.y.toDouble();
     });
 
     Point northEast = Point(x1, y1);
@@ -161,7 +161,7 @@ class SphericalUtils {
   /// [distance] The distance travelled, in meters.
   ///
   /// [heading]  The heading in degrees clockwise from north.
-  static Point computeOffsetOrigin(Point to, double distance, double heading) {
+  static Point? computeOffsetOrigin(Point to, double distance, double heading) {
     distance /= MathUtils.earthRadius;
     heading = toRadians(heading);
     // http://lists.maptools.org/pipermail/proj/2008-October/003939.html

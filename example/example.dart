@@ -1,5 +1,5 @@
 import 'package:google_maps_utils/google_maps_utils.dart';
-import 'package:poly/poly.dart';
+import 'dart:math';
 
 void main() async {
   Point from = Point(0.0, 0.0);
