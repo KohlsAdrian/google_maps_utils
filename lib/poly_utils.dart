@@ -300,7 +300,7 @@ class PolyUtils {
     }
 
     bool closedPolygon = isClosedPolygon(poly);
-    Point lastPoint;
+    late final Point lastPoint;
 
     // Check if the provided poly is a closed polygon
     if (closedPolygon) {
