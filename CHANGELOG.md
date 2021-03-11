@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.0
+
+* nnbd migration
+
 ## 1.3.0+1
 
 * dartfmt -w .

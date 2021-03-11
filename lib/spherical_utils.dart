@@ -71,7 +71,6 @@ class SphericalUtils {
   ///
   /// [return] The boundaries from the list of points
   static GMULatLngBounds toBoundsFromPoints(List<Point> points) {
-
     if (points.isEmpty) throw Exception("Points cannot be empty");
 
     double x0, x1, y0, y1;
