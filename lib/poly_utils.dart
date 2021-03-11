@@ -18,6 +18,7 @@ import 'package:google_maps_utils/google_maps_utils.dart';
 import 'package:google_maps_utils/utils/stack.dart';
 
 class PolyUtils {
+  PolyUtils._();
 
   /// Checks if [point] is inside [polygon]
   static bool containsLocationPoly(Point point, List<Point> polygon) {
@@ -389,7 +390,8 @@ class PolyUtils {
   /// [end]   the end of the line segment
   ///
   /// [return] the distance in meters (assuming spherical earth)
-  static double distanceToLine(final Point p, final Point start, final Point end) {
+  static double distanceToLine(
+      final Point p, final Point start, final Point end) {
     if (start == end) {
       return SphericalUtils.computeDistanceBetween(end, p);
     }
