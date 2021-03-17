@@ -11,9 +11,7 @@ class Stack<T> {
   bool get isNotEmpty => _list.isNotEmpty;
 
   /// push element in top of the stack.
-  void push(T e) {
-    _list.addLast(e);
-  }
+  void push(T e) => _list.addLast(e);
 
   /// get the top of the stack and delete it.
   T pop() {
@@ -23,14 +21,10 @@ class Stack<T> {
   }
 
   /// get the top of the stack without deleting it.
-  T top() {
-    return _list.last;
-  }
+  T top() => _list.last;
 
   /// get the size of the stack.
-  int size() {
-    return _list.length;
-  }
+  int size() => _list.length;
 
   /// get the length of the stack.
   int get length => size();

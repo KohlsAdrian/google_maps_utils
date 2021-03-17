@@ -13,7 +13,6 @@ import 'dart:math';
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 /// See the License for the specific language governing permissions and
 /// limitations under the License.
-
 import 'package:google_maps_utils/google_maps_utils.dart';
 import 'package:google_maps_utils/utils/stack.dart';
 
@@ -300,7 +299,7 @@ class PolyUtils {
     }
 
     bool closedPolygon = isClosedPolygon(poly);
-    late final Point lastPoint;
+    Point? lastPoint = null;
 
     // Check if the provided poly is a closed polygon
     if (closedPolygon) {
@@ -348,7 +347,7 @@ class PolyUtils {
       }
     }
 
-    if (closedPolygon) {
+    if (closedPolygon && lastPoint != null) {
       // Replace last point w/ offset with the original last point to re-close the polygon
       poly.removeAt(poly.length - 1);
       poly.add(lastPoint);
