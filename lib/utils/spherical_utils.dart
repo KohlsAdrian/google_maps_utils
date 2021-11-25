@@ -253,6 +253,17 @@ class SphericalUtils {
   static double computeDistanceBetween(Point from, Point to) =>
       computeAngleBetween(from, to) * MathUtils.earthRadius;
 
+  /// Returns the distance summed from all LatLng points, in meters
+  static double computeDistanceFromListOfPoints(List<Point> points) {
+    double total = 0.0;
+
+    for (int i = 0; i < points.length - 1; i++) {
+      total += computeDistanceBetween(points[i], points[i + 1]);
+    }
+
+    return total;
+  }
+
   /// Returns the length of the given path, in meters, on Earth.
   static double computeLength(List<Point> path) {
     if (path.length < 2) {

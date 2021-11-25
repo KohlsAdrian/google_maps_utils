@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.5.0+0
+
+* Calculate route distance
 ## 1.4.0+1
 
 * nnbd hotfix for pub.dev dartanalyzer
