@@ -1,13 +1,11 @@
-import 'package:google_maps_utils/google_maps_utils.dart';
 import 'dart:math';
+
+import 'package:google_maps_utils/google_maps_utils.dart';
 
 void main() async {
   Point from = Point(0.0, 0.0);
   Point to = Point(10.0, 5.0);
   Point randomPoint = Point(-23.54545, -23.898098);
-
-  double distance = SphericalUtils.computeDistanceBetween(from, to);
-  print('Distance: $distance meters');
 
   double heading = SphericalUtils.computeHeading(from, to);
   print('Heading: $heading degrees');
@@ -36,8 +34,8 @@ void main() async {
   print('simplified path: $simplifiedPathEncoded');
   print('path size simplified length: ${simplifiedPath.length}');
 
-  /// Example by: https://github.com/nicolascav
-  Point point = Point(-31.623060136389135, -60.68669021129609);
+  double distance = SphericalUtils.computeDistanceBetween(from, to);
+  print('Distance: $distance meters');
 
   /// Triangle
   List<Point> polygon = [
@@ -47,6 +45,11 @@ void main() async {
     Point(-31.624115, -60.688734),
   ];
 
+  /// Distance in meters of polygon
+  final mDistance = SphericalUtils.computeDistanceFromListOfPoints(polygon);
+  print('Distance: $mDistance meters of polygon');
+
+  Point point = Point(-31.623060136389135, -60.68669021129609);
   bool contains = PolyUtils.containsLocationPoly(point, polygon);
   print('point is inside polygon?: $contains');
 
