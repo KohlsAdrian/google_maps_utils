@@ -20,6 +20,7 @@ Fluttert community request: <https://github.com/flutter/flutter/issues/24689>
 
 ## Example *.dart
 
+```dart
     import 'package:google_maps_utils/google_maps_utils.dart';
 
     void main() {
@@ -74,6 +75,7 @@ Fluttert community request: <https://github.com/flutter/flutter/issues/24689>
 
         /// And Many more
     }
+````
 
 ## Result
 
