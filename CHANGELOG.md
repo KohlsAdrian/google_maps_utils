@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.5.1+0
+
+* Fixed import directive
+
+* Updated `earthRadius` to more precise value
+
 ## 1.5.0+0
 
 * Calculate route distance
