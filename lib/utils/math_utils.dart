@@ -19,7 +19,7 @@ class MathUtils {
   /// The earth's radius, in meters.
   /// Mean radius as defined by IUGG.
 
-  static final double earthRadius = 6371009;
+  static final double earthRadius = 6371008.7714;
 
   /// Restrict x to the range [low, high].
 

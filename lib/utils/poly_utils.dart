@@ -14,7 +14,6 @@ import 'dart:math';
 /// See the License for the specific language governing permissions and
 /// limitations under the License.
 import 'package:google_maps_utils/google_maps_utils.dart';
-import 'package:google_maps_utils/utils/stack.dart';
 
 class PolyUtils {
   PolyUtils._();

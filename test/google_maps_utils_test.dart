@@ -31,7 +31,7 @@ void main() {
     });
     test('distance to line', () async {
       double distanceToAB = PolyUtils.distanceToLine(randomPoint, from, to);
-      expect(distanceToAB, 3675538.1518512294);
+      expect(distanceToAB, 3675538.019968191);
     });
     test('simplified path', () async {
       final simplified = PolyUtils.simplify(path, 5000);
@@ -40,12 +40,12 @@ void main() {
     });
     test('distance between', () async {
       double distance = SphericalUtils.computeDistanceBetween(from, to);
-      expect(distance, 1241932.6430813475);
+      expect(distance, 1241932.5985192063);
     });
 
     test('distance in meters of points', () async {
       final distance = SphericalUtils.computeDistanceFromListOfPoints(polygon);
-      expect(distance, 1066.7244196470988);
+      expect(distance, 1066.724381371654);
     });
     test('point contains inside polygon', () async {
       bool contains = PolyUtils.containsLocationPoly(point, polygon);
