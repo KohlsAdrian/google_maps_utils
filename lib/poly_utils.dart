@@ -15,6 +15,8 @@ import 'dart:math';
 /// limitations under the License.
 import 'package:google_maps_utils/google_maps_utils.dart';
 
+import 'utils/stack.dart';
+
 class PolyUtils {
   PolyUtils._();
 
@@ -45,7 +47,7 @@ class PolyUtils {
     return (depth & 1) == 1;
   }
 
-  static final double _defaultTolerance = 0.1; // meters.
+  static final num _defaultTolerance = 0.1; // meters.
 
   /// Computes whether the given point lies on or near the edge of a polygon, within a specified
   /// tolerance in meters. The polygon edge is composed of great circle segments if geodesic
@@ -53,10 +55,10 @@ class PolyUtils {
   /// closing segment between the first point and the last point is included.
 
   static bool isLocationOnEdgeTolerance(
-          Point point, List<Point> polygon, bool geodesic, double tolerance) =>
+          Point point, List<Point> polygon, bool geodesic, num tolerance) =>
       _isLocationOnEdgeOrPath(point, polygon, true, geodesic, tolerance);
 
-  /// Same as {@link #isLocationOnEdge(Point, List, bool, double)}
+  /// Same as {@link #isLocationOnEdge(Point, List, bool, num)}
   /// with a default tolerance of 0.1 meters.
 
   static bool isLocationOnEdge(
@@ -69,10 +71,10 @@ class PolyUtils {
   /// segment between the first point and the last point is not included.
 
   static bool isLocationOnPathTolerance(
-          Point point, List<Point> polyline, bool geodesic, double tolerance) =>
+          Point point, List<Point> polyline, bool geodesic, num tolerance) =>
       _isLocationOnEdgeOrPath(point, polyline, false, geodesic, tolerance);
 
-  /// Same as {@link #isLocationOnPath(Point, List, bool, double)}
+  /// Same as {@link #isLocationOnPath(Point, List, bool, num)}
   /// <p>
   /// with a default tolerance of 0.1 meters.
 
@@ -81,7 +83,7 @@ class PolyUtils {
       isLocationOnPathTolerance(point, polyline, geodesic, _defaultTolerance);
 
   static bool _isLocationOnEdgeOrPath(Point point, List<Point> poly,
-          bool closed, bool geodesic, double toleranceEarth) =>
+          bool closed, bool geodesic, num toleranceEarth) =>
       locationIndexOnEdgeOrPath(
           point, poly, closed, geodesic, toleranceEarth) >=
       0;
@@ -106,10 +108,10 @@ class PolyUtils {
   ///
   /// poly.size()-2 if between poly[poly.size() - 2] and poly[poly.size() - 1]
   static int locationIndexOnPathTolerance(
-          Point point, List<Point> poly, bool geodesic, double tolerance) =>
+          Point point, List<Point> poly, bool geodesic, num tolerance) =>
       locationIndexOnEdgeOrPath(point, poly, false, geodesic, tolerance);
 
-  /// Same as {@link #locationIndexOnPath(Point, List, bool, double)}
+  /// Same as {@link #locationIndexOnPath(Point, List, bool, num)}
   /// <p>
   /// with a default tolerance of 0.1 meters.
   static int locationIndexOnPath(
@@ -139,24 +141,24 @@ class PolyUtils {
   ///
   /// poly.size()-2 if between poly[poly.size() - 2] and poly[poly.size() - 1]
   static int locationIndexOnEdgeOrPath(Point point, List<Point> poly,
-      bool closed, bool geodesic, double toleranceEarth) {
+      bool closed, bool geodesic, num toleranceEarth) {
     int size = poly.length;
     if (size == 0) {
       return -1;
     }
 
-    double tolerance = toleranceEarth / MathUtils.earthRadius;
-    double havTolerance = MathUtils.hav(tolerance);
-    double lat3 = SphericalUtils.toRadians(point.x).toDouble();
-    double lng3 = SphericalUtils.toRadians(point.y).toDouble();
+    num tolerance = toleranceEarth / MathUtils.earthRadius;
+    num havTolerance = MathUtils.hav(tolerance);
+    num lat3 = SphericalUtils.toRadians(point.x);
+    num lng3 = SphericalUtils.toRadians(point.y);
     Point prev = poly[closed ? size - 1 : 0];
-    double lat1 = SphericalUtils.toRadians(prev.x).toDouble();
-    double lng1 = SphericalUtils.toRadians(prev.y).toDouble();
+    num lat1 = SphericalUtils.toRadians(prev.x);
+    num lng1 = SphericalUtils.toRadians(prev.y);
     int idx = 0;
     if (geodesic) {
       for (final point2 in poly) {
-        double lat2 = SphericalUtils.toRadians(point2.x).toDouble();
-        double lng2 = SphericalUtils.toRadians(point2.y).toDouble();
+        num lat2 = SphericalUtils.toRadians(point2.x);
+        num lng2 = SphericalUtils.toRadians(point2.y);
         if (_isOnSegmentGC(lat1, lng1, lat2, lng2, lat3, lng3, havTolerance)) {
           return max(0, idx - 1);
         }
@@ -170,34 +172,34 @@ class PolyUtils {
       // segment. This method is an approximation, because it uses "closest" in mercator
       // space which is not "closest" on the sphere -- but the error is small because
       // "tolerance" is small.
-      double minAcceptable = lat3 - tolerance;
-      double maxAcceptable = lat3 + tolerance;
-      double y1 = MathUtils.mercator(lat1);
-      double y3 = MathUtils.mercator(lat3);
-      List<double> xTry = List.generate(3, (index) => 0);
+      num minAcceptable = lat3 - tolerance;
+      num maxAcceptable = lat3 + tolerance;
+      num y1 = MathUtils.mercator(lat1);
+      num y3 = MathUtils.mercator(lat3);
+      List<num> xTry = List.generate(3, (index) => 0);
       for (final point2 in poly) {
-        double lat2 = SphericalUtils.toRadians(point2.x).toDouble();
-        double y2 = MathUtils.mercator(lat2);
-        double lng2 = SphericalUtils.toRadians(point2.y).toDouble();
+        num lat2 = SphericalUtils.toRadians(point2.x);
+        num y2 = MathUtils.mercator(lat2);
+        num lng2 = SphericalUtils.toRadians(point2.y);
         if (max(lat1, lat2) >= minAcceptable &&
             min(lat1, lat2) <= maxAcceptable) {
           // We offset ys by -lng1; the implicit x1 is 0.
-          double x2 = MathUtils.wrap(lng2 - lng1, -pi, pi);
-          double x3Base = MathUtils.wrap(lng3 - lng1, -pi, pi);
+          num x2 = MathUtils.wrap(lng2 - lng1, -pi, pi);
+          num x3Base = MathUtils.wrap(lng3 - lng1, -pi, pi);
           xTry[0] = x3Base;
           // Also explore wrapping of x3Base around the world in both directions.
           xTry[1] = x3Base + 2 * pi;
           xTry[2] = x3Base - 2 * pi;
           for (final x3 in xTry) {
-            double dy = y2 - y1;
-            double len2 = x2 * x2 + dy * dy;
-            double t = len2 <= 0
+            num dy = y2 - y1;
+            num len2 = x2 * x2 + dy * dy;
+            num t = len2 <= 0
                 ? 0
                 : MathUtils.clamp((x3 * x2 + (y3 - y1) * dy) / len2, 0, 1);
-            double xClosest = t * x2;
-            double yClosest = y1 + t * dy;
-            double latClosest = MathUtils.inverseMercator(yClosest);
-            double havDist =
+            num xClosest = t * x2;
+            num yClosest = y1 + t * dy;
+            num latClosest = MathUtils.inverseMercator(yClosest);
+            num havDist =
                 MathUtils.havDistance(lat3, latClosest, x3 - xClosest);
 
             if (havDist < havTolerance) return max(0, idx - 1);
@@ -214,44 +216,44 @@ class PolyUtils {
 
   /// Returns sin(initial bearing from (lat1,lng1) to (lat3,lng3) minus initial bearing
   /// from (lat1, lng1) to (lat2,lng2)).
-  static double _sinDeltaBearing(double lat1, double lng1, double lat2,
-      double lng2, double lat3, double lng3) {
-    double sinLat1 = sin(lat1);
-    double cosLat2 = cos(lat2);
-    double cosLat3 = cos(lat3);
-    double lat31 = lat3 - lat1;
-    double lng31 = lng3 - lng1;
-    double lat21 = lat2 - lat1;
-    double lng21 = lng2 - lng1;
-    double a = sin(lng31) * cosLat3;
-    double c = sin(lng21) * cosLat2;
-    double b = sin(lat31) + 2 * sinLat1 * cosLat3 * MathUtils.hav(lng31);
-    double d = sin(lat21) + 2 * sinLat1 * cosLat2 * MathUtils.hav(lng21);
-    double denom = (a * a + b * b) * (c * c + d * d);
+  static num _sinDeltaBearing(
+      num lat1, num lng1, num lat2, num lng2, num lat3, num lng3) {
+    num sinLat1 = sin(lat1);
+    num cosLat2 = cos(lat2);
+    num cosLat3 = cos(lat3);
+    num lat31 = lat3 - lat1;
+    num lng31 = lng3 - lng1;
+    num lat21 = lat2 - lat1;
+    num lng21 = lng2 - lng1;
+    num a = sin(lng31) * cosLat3;
+    num c = sin(lng21) * cosLat2;
+    num b = sin(lat31) + 2 * sinLat1 * cosLat3 * MathUtils.hav(lng31);
+    num d = sin(lat21) + 2 * sinLat1 * cosLat2 * MathUtils.hav(lng21);
+    num denom = (a * a + b * b) * (c * c + d * d);
     return denom <= 0 ? 1 : (a * d - b * c) / sqrt(denom);
   }
 
-  static bool _isOnSegmentGC(double lat1, double lng1, double lat2, double lng2,
-      double lat3, double lng3, double havTolerance) {
-    double havDist13 = MathUtils.havDistance(lat1, lat3, lng1 - lng3);
+  static bool _isOnSegmentGC(num lat1, num lng1, num lat2, num lng2, num lat3,
+      num lng3, num havTolerance) {
+    num havDist13 = MathUtils.havDistance(lat1, lat3, lng1 - lng3);
     if (havDist13 <= havTolerance) {
       return false;
     }
 
-    double havDist23 = MathUtils.havDistance(lat2, lat3, lng2 - lng3);
+    num havDist23 = MathUtils.havDistance(lat2, lat3, lng2 - lng3);
     if (havDist23 <= havTolerance) {
       return false;
     }
 
-    double sinBearing = _sinDeltaBearing(lat1, lng1, lat2, lng2, lat3, lng3);
-    double sinDist13 = MathUtils.sinFromHav(havDist13);
-    double havCrossTrack = MathUtils.havFromSin(sinDist13 * sinBearing);
+    num sinBearing = _sinDeltaBearing(lat1, lng1, lat2, lng2, lat3, lng3);
+    num sinDist13 = MathUtils.sinFromHav(havDist13);
+    num havCrossTrack = MathUtils.havFromSin(sinDist13 * sinBearing);
     if (havCrossTrack > havTolerance) {
       return false;
     }
 
-    double havDist12 = MathUtils.havDistance(lat1, lat2, lng1 - lng2);
-    double term = havDist12 + havCrossTrack * (1 - 2 * havDist12);
+    num havDist12 = MathUtils.havDistance(lat1, lat2, lng1 - lng2);
+    num term = havDist12 + havCrossTrack * (1 - 2 * havDist12);
     if (havDist13 > term || havDist23 > term) {
       return false;
     }
@@ -260,10 +262,10 @@ class PolyUtils {
       return false;
     }
 
-    double cosCrossTrack = 1 - 2 * havCrossTrack;
-    double havAlongTrack13 = (havDist13 - havCrossTrack) / cosCrossTrack;
-    double havAlongTrack23 = (havDist23 - havCrossTrack) / cosCrossTrack;
-    double sinSumAlongTrack =
+    num cosCrossTrack = 1 - 2 * havCrossTrack;
+    num havAlongTrack13 = (havDist13 - havCrossTrack) / cosCrossTrack;
+    num havAlongTrack23 = (havDist23 - havCrossTrack) / cosCrossTrack;
+    num sinSumAlongTrack =
         MathUtils.sinSumFromHav(havAlongTrack13, havAlongTrack23);
 
     // Compare with half-circle == pi using sign of sin().
@@ -288,7 +290,7 @@ class PolyUtils {
   ///                  simplified poly.
   ///
   /// [return] a simplified poly produced by the Douglas-Peucker algorithm
-  static List<Point> simplify(List<Point> poly, double tolerance) {
+  static List<Point> simplify(List<Point> poly, num tolerance) {
     final int n = poly.length;
     if (n < 1) {
       throw Exception("Polyline must have at least 1 point");
@@ -303,7 +305,7 @@ class PolyUtils {
     // Check if the provided poly is a closed polygon
     if (closedPolygon) {
       // Add a small offset to the last point for Douglas-Peucker on polygons (see #201)
-      final double offset = 0.00000000001;
+      final num offset = 0.00000000001;
       lastPoint = poly[poly.length - 1];
       // Point.x and .y are immutable, so replace the last point
       poly.removeAt(poly.length - 1);
@@ -316,11 +318,11 @@ class PolyUtils {
     int idx = 0;
     int maxIdx = 0;
     Stack<List<int>> stack = Stack();
-    List<double> dists = List.generate(n, (index) => 0);
+    List<num> dists = List.generate(n, (index) => 0);
     dists[0] = 1;
     dists[n - 1] = 1;
-    double maxDist = 0.0;
-    double dist = 0.0;
+    num maxDist = 0.0;
+    num dist = 0.0;
     List<int> current = [];
 
     if (n > 2) {
@@ -388,22 +390,21 @@ class PolyUtils {
   /// [end]   the end of the line segment
   ///
   /// [return] the distance in meters (assuming spherical earth)
-  static double distanceToLine(
-      final Point p, final Point start, final Point end) {
+  static num distanceToLine(final Point p, final Point start, final Point end) {
     if (start == end) {
       return SphericalUtils.computeDistanceBetween(end, p);
     }
 
-    final double s0lat = SphericalUtils.toRadians(p.x);
-    final double s0lng = SphericalUtils.toRadians(p.y);
-    final double s1lat = SphericalUtils.toRadians(start.x);
-    final double s1lng = SphericalUtils.toRadians(start.y);
-    final double s2lat = SphericalUtils.toRadians(end.x);
-    final double s2lng = SphericalUtils.toRadians(end.y);
+    final num s0lat = SphericalUtils.toRadians(p.x);
+    final num s0lng = SphericalUtils.toRadians(p.y);
+    final num s1lat = SphericalUtils.toRadians(start.x);
+    final num s1lng = SphericalUtils.toRadians(start.y);
+    final num s2lat = SphericalUtils.toRadians(end.x);
+    final num s2lng = SphericalUtils.toRadians(end.y);
 
-    double s2s1lat = s2lat - s1lat;
-    double s2s1lng = s2lng - s1lng;
-    final double u = ((s0lat - s1lat) * s2s1lat + (s0lng - s1lng) * s2s1lng) /
+    num s2s1lat = s2lat - s1lat;
+    num s2s1lng = s2lng - s1lng;
+    final num u = ((s0lat - s1lat) * s2s1lat + (s0lng - s1lng) * s2s1lng) /
         (s2s1lat * s2s1lat + s2s1lng * s2s1lng);
 
     if (u <= 0) {

@@ -21,16 +21,16 @@ void main() {
     ];
 
     test('heading', () async {
-      double heading = SphericalUtils.computeHeading(from, to);
+      final heading = SphericalUtils.computeHeading(from, to);
       expect(heading, 26.302486345342523);
     });
 
     test('angle', () async {
-      double angle = SphericalUtils.computeAngleBetween(from, to);
+      final angle = SphericalUtils.computeAngleBetween(from, to);
       expect(angle, 0.19493500057547358);
     });
     test('distance to line', () async {
-      double distanceToAB = PolyUtils.distanceToLine(randomPoint, from, to);
+      final distanceToAB = PolyUtils.distanceToLine(randomPoint, from, to);
       expect(distanceToAB, 3675538.019968191);
     });
     test('simplified path', () async {
@@ -39,7 +39,7 @@ void main() {
       expect(encoded, 'wjiaFz`hgQcjIke\\t{d@|aOutJz|UokC}xWomJdjM');
     });
     test('distance between', () async {
-      double distance = SphericalUtils.computeDistanceBetween(from, to);
+      final distance = SphericalUtils.computeDistanceBetween(from, to);
       expect(distance, 1241932.5985192063);
     });
 
@@ -48,8 +48,17 @@ void main() {
       expect(distance, 1066.724381371654);
     });
     test('point contains inside polygon', () async {
-      bool contains = PolyUtils.containsLocationPoly(point, polygon);
+      final contains = PolyUtils.containsLocationPoly(point, polygon);
       expect(contains, true);
+    });
+    test('bounds should split into 4 subBounds', () async {
+      final bounds = SphericalUtils.toBounds(
+        randomPoint.x,
+        randomPoint.y,
+        1000,
+      );
+      final subBounds = SphericalUtils.toSubBounds(bounds);
+      expect(subBounds.length, 4);
     });
   });
 }

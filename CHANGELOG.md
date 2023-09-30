@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.0.0+0
+
+* BREAKING CHANGE
+
+ - Changed folder files structure
+ - Replaced all `int` and `double` by `num`
+ 
+* Added `toSubBounds`
+
 ## 1.5.1+0
 
 * Fixed import directive

@@ -7,13 +7,13 @@ void main() async {
   Point to = Point(10.0, 5.0);
   Point randomPoint = Point(-23.54545, -23.898098);
 
-  double heading = SphericalUtils.computeHeading(from, to);
+  num heading = SphericalUtils.computeHeading(from, to);
   print('Heading: $heading degrees');
 
-  double angle = SphericalUtils.computeAngleBetween(from, to);
+  num angle = SphericalUtils.computeAngleBetween(from, to);
   print('Angle: $angle degrees');
 
-  double distanceToAB = PolyUtils.distanceToLine(randomPoint, from, to);
+  num distanceToAB = PolyUtils.distanceToLine(randomPoint, from, to);
   print('Distance to Line: $distanceToAB meters');
 
   /// Distance: 1241932.6430813475
@@ -34,7 +34,7 @@ void main() async {
   print('simplified path: $simplifiedPathEncoded');
   print('path size simplified length: ${simplifiedPath.length}');
 
-  double distance = SphericalUtils.computeDistanceBetween(from, to);
+  num distance = SphericalUtils.computeDistanceBetween(from, to);
   print('Distance: $distance meters');
 
   /// Triangle
@@ -57,6 +57,21 @@ void main() async {
     String osrmShape = 'ohr~Fn{mvOve@vqA_GmlBeJqwDkEceI~qDwIzvDpqR';
     final decoded = PolyUtils.decode(osrmShape);
     print('shape decoded: $decoded');
+  } catch (e) {
+    print(e);
+  }
+
+  try {
+    final bounds = SphericalUtils.toBounds(
+      randomPoint.x,
+      randomPoint.y,
+      1000,
+    );
+
+    final subBounds = SphericalUtils.toSubBounds(bounds);
+    for (final subBound in subBounds) {
+      print('toSubBounds:${subBound.northEast}:${subBound.southWest}');
+    }
   } catch (e) {
     print(e);
   }
