@@ -62,16 +62,19 @@ void main() async {
   }
 
   try {
-    final bounds = SphericalUtils.toBounds(
-      randomPoint.x,
-      randomPoint.y,
-      1000,
+    final bounds = GMULatLngBounds(
+      northEast: Point(-26.917429376164765, -49.06996585428715),
+      southWest: Point(-26.918328620990753, -49.071011915802956),
     );
 
     final subBounds = SphericalUtils.toSubBounds(bounds);
+    print('toSubBounds:[');
     for (final subBound in subBounds) {
-      print('toSubBounds:${subBound.northEast}:${subBound.southWest}');
+      final ne = subBound.northEast;
+      final sw = subBound.southWest;
+      print('${ne.x},${ne.y}:${sw.x},${sw.y}');
     }
+    print(']');
   } catch (e) {
     print(e);
   }

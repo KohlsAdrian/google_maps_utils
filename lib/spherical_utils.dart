@@ -19,7 +19,7 @@ class GMULatLngBounds {
   final Point northEast;
   final Point southWest;
 
-  GMULatLngBounds(this.northEast, this.southWest);
+  GMULatLngBounds({required this.northEast, required this.southWest});
 }
 
 class SphericalUtils {
@@ -62,7 +62,10 @@ class SphericalUtils {
         SphericalUtils.computeOffset(center, distanceFromCenterToCorner, 225.0);
     Point northeastCorner =
         SphericalUtils.computeOffset(center, distanceFromCenterToCorner, 45.0);
-    return GMULatLngBounds(northeastCorner, southwestCorner);
+    return GMULatLngBounds(
+      northEast: northeastCorner,
+      southWest: southwestCorner,
+    );
   }
 
   /// Convert a list of latitudes and longitudes to an object of boundaries
@@ -86,7 +89,10 @@ class SphericalUtils {
     Point northEast = Point(x1, y1);
     Point southWest = Point(x0, y0);
 
-    GMULatLngBounds gmuLatLngBounds = GMULatLngBounds(northEast, southWest);
+    GMULatLngBounds gmuLatLngBounds = GMULatLngBounds(
+      northEast: northEast,
+      southWest: southWest,
+    );
 
     return gmuLatLngBounds;
   }
@@ -347,24 +353,26 @@ class SphericalUtils {
 
     final northEast = bounds.northEast;
     final southWest = bounds.southWest;
-    final northWest = Point(northEast.y, southWest.x);
 
-    final distanceLatitude = northEast.x - southWest.x;
-    final distanceLongitude = northEast.y - northWest.y;
+    final xDistanceStep = (northEast.x - southWest.x) / division;
+    final yDistanceStep = (northEast.y - southWest.y) / division;
 
-    for (int i = 0; i < division; i++) {
-      for (int j = 0; j < division; j++) {
+    for (int i = 1; i <= division; i++) {
+      num currentX = southWest.x;
+      num currentY = southWest.y;
+      for (int j = 1; j <= division; j++) {
         final newNorthEast = Point(
-          southWest.x + (distanceLatitude * i) / division,
-          southWest.y + (distanceLongitude * j) / division,
+          currentX + xDistanceStep * i,
+          currentY + yDistanceStep * j,
         );
-
         final newSouthWest = Point(
-          southWest.x + (distanceLatitude * (i + 1)) / division,
-          southWest.y + (distanceLongitude * (j + 1)) / division,
+          currentX + (xDistanceStep * (i - 1)),
+          currentY + (yDistanceStep * (j - 1)),
         );
 
-        subBounds.add(GMULatLngBounds(newNorthEast, newSouthWest));
+        subBounds.add(
+          GMULatLngBounds(northEast: newNorthEast, southWest: newSouthWest),
+        );
       }
     }
 

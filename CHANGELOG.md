@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.0+1
+
+* Fixed `toSubBounds`
+
 ## 2.0.0+0
 
 * BREAKING CHANGE
