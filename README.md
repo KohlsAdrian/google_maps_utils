@@ -4,6 +4,10 @@ A Flutter/Dart project based on Android Google Maps Utils converted/ported to Da
 There are many packages that features Google Maps Utils, but none has the 3 main classes
 from the sources
 
+## Funding
+
+This package is proudly sponsored by **[bus2.me](https://bus2.me)**.
+
 ## Status: 3 of 78 classes converted
 
 This is a project for converting all of the tools from Android Google Maps Utils partially.
@@ -24,9 +28,9 @@ Fluttert community request: <https://github.com/flutter/flutter/issues/24689>
     import 'package:google_maps_utils/google_maps_utils.dart';
 
     void main() {
-        Point from = Point(0.0, 0.0);
-        Point to = Point(10.0, 5.0);
-        Point randomPoint = Point(-23.54545, -23.898098);
+        Point<double> from = Point(0.0, 0.0);
+        Point<double> to = Point(10.0, 5.0);
+        Point<double> randomPoint = Point(-23.54545, -23.898098);
 
         double distance = SphericalUtils.computeDistanceBetween(from, to);
         print('Distance: $distance meters');
@@ -40,19 +44,19 @@ Fluttert community request: <https://github.com/flutter/flutter/issues/24689>
         double distanceToAB = PolyUtils.distanceToLine(randomPoint, from, to);
         print('Distance to Line: $distanceToAB meters');
 
-        /// Distance: 1241932.6430813475
+        /// Distance: 1241932.5985192063
         /// Heading: 26.302486345342523
         /// Angle: 0.19493500057547358
-        /// Distance to Line: 3675538.1518512294
+        /// Distance to Line: 3675538.019968191
 
         /// See grid path on: https://developers.google.com/maps/documentation/utilities/polylinealgorithm
 
-        List<Point> path = PolyUtils.decode(
+        List<Point<double>> path = PolyUtils.decode(
             'wjiaFz`hgQs}GmmBok@}vX|cOzKvvT`uNutJz|UgqAglAjr@ijBz]opA|Vor@}ViqEokCaiGu|@byAkjAvrMgjDj_A??ey@abD');
 
         print('path size length: ${path.length}');
 
-        List<Point> simplifiedPath = PolyUtils.simplify(path, 5000);
+        List<Point<double>> simplifiedPath = PolyUtils.simplify(path, 5000);
         String simplifiedPathEncoded = PolyUtils.encode(simplifiedPath);
 
         print('simplified path: $simplifiedPathEncoded');
@@ -60,10 +64,10 @@ Fluttert community request: <https://github.com/flutter/flutter/issues/24689>
 
 
         /// Example by: https://github.com/nicolascav
-        Point point = Point(-31.623060136389135, -60.68669021129609);
+        Point<double> point = Point(-31.623060136389135, -60.68669021129609);
 
         /// Triangle
-        List<Point> polygon = [
+        List<Point<double>> polygon = [
             Point(-31.624115, -60.688734),
             Point(-31.624115, -60.684657),
             Point(-31.621594, -60.686717),
@@ -75,17 +79,17 @@ Fluttert community request: <https://github.com/flutter/flutter/issues/24689>
 
         /// And Many more
     }
-````
+```
 
 ## Result
 
-- Distance: 1241932.6430813475 meters
+- Distance: 1241932.5985192063 meters
 
 - Heading: 26.302486345342523 degrees
 
 - Angle: 0.19493500057547358 degrees
 
-- Distance to Line: 3675538.1518512294 meters
+- Distance to Line: 3675538.019968191 meters
 
 - path size length: 17
 

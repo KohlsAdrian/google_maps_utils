@@ -1,0 +1,8 @@
+include: package:lints/core.yaml
+
+linter:
+  rules:
+    # Prefer `final` for locals that are never reassigned. Reassigned locals keep
+    # an explicit type (no `var`); non-reassigned locals use `final` with an
+    # inferred type.
+    - prefer_final_locals
