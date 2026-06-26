@@ -1,5 +1,51 @@
 # Changelog
 
+## 3.0.0
+
+* **BREAKING:** the public API is now typed with `double` instead of `num`.
+  Coordinates use `Point<double>` (so methods take `Point<double>` /
+  `List<Point<double>>` and scalar parameters like `distance`, `heading`,
+  `tolerance`, `fraction` and `radius` are `double`); all numeric return types
+  are now `double` (or `int` for indices). Callers using `List<Point>`,
+  `Point<num>` or integer-coordinate points must switch to `Point<double>`
+  (e.g. `Point(0.0, 0.0)`). Behaviour and results are unchanged.
+* **Fixed** `PolyUtils.isLocationOnEdge`, `isLocationOnPath` and
+  `locationIndexOnPath`/`locationIndexOnEdgeOrPath` always reporting "not on
+  path" in geodesic mode (even for a point lying exactly on the line). Three
+  boolean returns in the private `_isOnSegmentGC` helper were inverted during the
+  original Java port; they now match the canonical `android-maps-utils` source.
+* **Fixed & upgraded** `PolyUtils.containsLocationPoly`. It returned wrong
+  results on shapes with multiple vertices when the test point shared a latitude
+  with a vertex ([issue #11](https://github.com/KohlsAdrian/google_maps_utils/issues/11)).
+  It is now a faithful spherical port of android-maps-utils'
+  `PolyUtil.containsLocation` (verified identical in v2.3.0 and v4.5.1), so it is
+  also correct for polygons that **cross the antimeridian (±180°)** or **enclose
+  a pole** — cases the old planar ray-cast could not handle. Added an optional
+  `geodesic` parameter (great-circle vs Rhumb edges; defaults to `false`, the
+  closest match to prior behaviour). Verified against an independent 3D
+  winding-number oracle across 200k points. A point on a vertex is inside; the
+  result for a point exactly on an edge is now undefined (it was a fragile,
+  float-exact check before).
+* **Performance:** `PolyUtils.decode` no longer re-splits the entire encoded
+  string on every character (O(n²) → O(n)); `encode` internals simplified. Output
+  is unchanged.
+* **Docs:** corrected stale `Distance` and `Distance to Line` values in the
+  README and example (they predated the `earthRadius` precision update) and fixed
+  a malformed code fence.
+* **Tests:** added regression tests for the geodesic on-path/on-edge bug plus
+  broad coverage for previously-untested functions.
+* **Pub score:** resolved all `package:lints/core` analysis issues (return-type
+  and dangling-doc-comment lints), eliminated every dartdoc warning, documented
+  the remaining public members, and added `analysis_options.yaml`, a `lints`
+  dev-dependency, a `repository` field and a refreshed package description.
+* **Style:** local variables now use `final name = …` (inferred type) when never
+  reassigned and an explicit `Type name = …` (no `var`) when reassigned; enabled
+  `prefer_final_locals`.
+* **Funding:** added a `funding:` entry to the pubspec, a `.github/FUNDING.yml`,
+  and a README sponsor section, all pointing to [bus2.me](https://bus2.me).
+
+_Audited and fixed with Claude Opus 4.8 (Ultracode — xhigh + workflows)._ _Sponsored by [bus2.me](https://bus2.me)_
+
 ## 2.0.0+1
 
 * Fixed `toSubBounds`

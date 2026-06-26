@@ -2,7 +2,7 @@ import 'dart:collection';
 import 'dart:core';
 
 class Stack<T> {
-  final ListQueue<T> _list = ListQueue();
+  final _list = ListQueue<T>();
 
   /// check if the stack is empty.
   bool get isEmpty => _list.isEmpty;
@@ -15,7 +15,7 @@ class Stack<T> {
 
   /// get the top of the stack and delete it.
   T pop() {
-    T res = _list.last;
+    final res = _list.last;
     _list.removeLast();
     return res;
   }
