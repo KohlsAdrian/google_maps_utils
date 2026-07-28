@@ -1,34 +1,31 @@
 import 'dart:collection';
-import 'dart:core';
 
+/// A simple LIFO stack backed by a [ListQueue].
 class Stack<T> {
   final _list = ListQueue<T>();
 
-  /// check if the stack is empty.
+  /// Whether the stack is empty.
   bool get isEmpty => _list.isEmpty;
 
-  /// check if the stack is not empty.
+  /// Whether the stack is not empty.
   bool get isNotEmpty => _list.isNotEmpty;
 
-  /// push element in top of the stack.
+  /// Pushes [e] onto the top of the stack.
   void push(T e) => _list.addLast(e);
 
-  /// get the top of the stack and delete it.
+  /// Removes and returns the top element.
   T pop() {
     final res = _list.last;
     _list.removeLast();
     return res;
   }
 
-  /// get the top of the stack without deleting it.
+  /// Returns the top element without removing it.
   T top() => _list.last;
 
-  /// get the size of the stack.
-  int size() => _list.length;
+  /// The number of elements in the stack.
+  int get length => _list.length;
 
-  /// get the length of the stack.
-  int get length => size();
-
-  /// returns true if element is found in the stack
+  /// Whether the stack contains [x].
   bool contains(T x) => _list.contains(x);
 }

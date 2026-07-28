@@ -1,5 +1,44 @@
 # Changelog
 
+## 4.0.0
+
+* **BREAKING:** removed `SphericalUtils.computeDistanceFromListOfPoints`.
+  Use `SphericalUtils.computeLength` instead — it has identical behaviour.
+* **BREAKING:** removed `SphericalUtils.polarTriangleArea`. This was an
+  implementation detail that was accidentally public. Use `computeArea` or
+  `computeSignedArea` for area calculations.
+* **BREAKING:** renamed `GMULatLngBounds` to `GoogleMapsUtilsLatLngBounds`.
+* **BREAKING:** SDK constraint bumped from `>=2.12.0 <4.0.0` to
+  `>=3.0.0 <4.0.0`.
+* **New:** added `GoogleMapsUtils` facade class with `.math`, `.poly`, and
+  `.spherical` getters for a unified, Flutter-idiomatic access pattern:
+  ```dart
+  GoogleMapsUtils.spherical.computeDistanceBetween(from, to);
+  GoogleMapsUtils.poly.decode(encoded);
+  GoogleMapsUtils.math.wrap(190, -180, 180);
+  ```
+  The original `SphericalUtils`, `PolyUtils`, and `MathUtils` classes remain
+  available for direct static access.
+* **No longer mutates input:** `PolyUtils.simplify` now works on an internal
+  copy instead of calling `removeAt`/`add` on the caller's list.
+* **Added** `GMULatLngBounds.==`, `hashCode`, and `toString` for easier
+  debugging and testing.
+* **Improved** `ArgumentError` is now thrown instead of plain `Exception` in
+  `PolyUtils.simplify` and `SphericalUtils.toBoundsFromPoints`.
+* **Style:** `MathUtils.earthRadius` is now a compile-time `const` instead of
+  `static final`. Default tolerance in `PolyUtils` is also `const`.
+* **CI:** updated GitHub Actions workflow to `checkout@v4`, `setup-dart@v1`
+  (stable), enabled `dart format` check, and `--fatal-infos` analysis.
+* **Pub score:** added `topics` field to pubspec for better discoverability.
+* **Docs:** fixed typos in README, added dartdoc links to cross-referenced
+  classes, improved doc comments across all source files.
+* **Internal:** replaced `List.generate` with `List.filled` where appropriate,
+  replaced `.forEach` with `for-in` loops, removed redundant `size()` method
+  from internal `Stack` class.
+* **Assets:** added `maps-icon.svg` repo icon (generated with Kiro).
+
+_Audited and fixed with Kiro._
+
 ## 3.0.0
 
 * **BREAKING:** the public API is now typed with `double` instead of `num`.

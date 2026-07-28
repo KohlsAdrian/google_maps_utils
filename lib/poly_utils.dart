@@ -113,37 +113,32 @@ class PolyUtils {
           MathUtils.mercator(lat2) * lng3) /
       lng2;
 
-  static final _defaultTolerance = 0.1; // meters.
+  static const _defaultTolerance = 0.1; // meters
 
-  /// Computes whether the given point lies on or near the edge of a polygon, within a specified
-  /// tolerance in meters. The polygon edge is composed of great circle segments if geodesic
-  /// is true, and of Rhumb segments otherwise. The polygon edge is implicitly closed -- the
-  /// closing segment between the first point and the last point is included.
-
+  /// Computes whether the given [point] lies on or near the edge of a [polygon],
+  /// within a specified [tolerance] in meters. The polygon edge is composed of
+  /// great circle segments if [geodesic] is true, and of Rhumb segments
+  /// otherwise. The polygon edge is implicitly closed — the closing segment
+  /// between the first point and the last point is included.
   static bool isLocationOnEdgeTolerance(Point<double> point,
           List<Point<double>> polygon, bool geodesic, double tolerance) =>
       _isLocationOnEdgeOrPath(point, polygon, true, geodesic, tolerance);
 
-  /// Same as [isLocationOnEdge]
-  /// with a default tolerance of 0.1 meters.
-
+  /// Same as [isLocationOnEdgeTolerance] with a default tolerance of 0.1 meters.
   static bool isLocationOnEdge(
           Point<double> point, List<Point<double>> polygon, bool geodesic) =>
       isLocationOnEdgeTolerance(point, polygon, geodesic, _defaultTolerance);
 
-  /// Computes whether the given point lies on or near a polyline, within a specified
-  /// tolerance in meters. The polyline is composed of great circle segments if geodesic
-  /// is true, and of Rhumb segments otherwise. The polyline is not closed -- the closing
-  /// segment between the first point and the last point is not included.
-
+  /// Computes whether the given [point] lies on or near a [polyline], within a
+  /// specified [tolerance] in meters. The polyline is composed of great circle
+  /// segments if [geodesic] is true, and of Rhumb segments otherwise. The
+  /// polyline is not closed — the closing segment between the first point and
+  /// the last point is not included.
   static bool isLocationOnPathTolerance(Point<double> point,
           List<Point<double>> polyline, bool geodesic, double tolerance) =>
       _isLocationOnEdgeOrPath(point, polyline, false, geodesic, tolerance);
 
-  /// Same as [isLocationOnPath]
-  ///
-  /// with a default tolerance of 0.1 meters.
-
+  /// Same as [isLocationOnPathTolerance] with a default tolerance of 0.1 meters.
   static bool isLocationOnPath(
           Point<double> point, List<Point<double>> polyline, bool geodesic) =>
       isLocationOnPathTolerance(point, polyline, geodesic, _defaultTolerance);
@@ -158,58 +153,34 @@ class PolyUtils {
           point, poly, closed, geodesic, toleranceEarth) >=
       0;
 
-  /// Computes whether (and where) a given point lies on or near a polyline, within a specified tolerance.
-  /// The polyline is not closed -- the closing segment between the first point and the last point is not included.
+  /// Computes whether (and where) a given [point] lies on or near a polyline,
+  /// within a specified [tolerance] in meters.
   ///
-  /// [point]     our needle
+  /// The polyline is not closed — the closing segment between the first point
+  /// and the last point is not included.
   ///
-  /// [poly]      our haystack
-  ///
-  /// [geodesic]  the polyline is composed of great circle segments if geodesic
-  ///                  is true, and of Rhumb segments otherwise
-  ///
-  /// [tolerance] tolerance (in meters)
-  ///
-  /// Returns -1 if point does not lie on or near the polyline.
-  ///
-  /// 0 if point is between `poly[0]` and `poly[1]` (inclusive),
-  ///
-  /// 1 if between `poly[1]` and `poly[2]`,
-  ///
-  /// poly.size()-2 if between `poly[poly.size() - 2]` and `poly[poly.size() - 1]`
+  /// Returns -1 if the point does not lie on or near the polyline.
+  /// Returns 0 if the point is between `poly[0]` and `poly[1]` (inclusive),
+  /// 1 if between `poly[1]` and `poly[2]`, etc.
   static int locationIndexOnPathTolerance(Point<double> point,
           List<Point<double>> poly, bool geodesic, double tolerance) =>
       locationIndexOnEdgeOrPath(point, poly, false, geodesic, tolerance);
 
-  /// Same as [locationIndexOnPath]
-  ///
-  /// with a default tolerance of 0.1 meters.
+  /// Same as [locationIndexOnPathTolerance] with a default tolerance of 0.1 meters.
   static int locationIndexOnPath(
           Point<double> point, List<Point<double>> polyline, bool geodesic) =>
       locationIndexOnPathTolerance(
           point, polyline, geodesic, _defaultTolerance);
 
-  /// Computes whether (and where) a given point lies on or near a polyline, within a specified tolerance.
-  /// If closed, the closing segment between the last and first points of the polyline is not considered.
+  /// Computes whether (and where) a given [point] lies on or near a polyline,
+  /// within a specified [toleranceEarth] in meters.
   ///
-  /// [point]          our needle
+  /// If [closed], the closing segment between the last and first points of the
+  /// polyline is considered.
   ///
-  /// [poly]           our haystack
-  ///
-  /// [closed]         whether the polyline should be considered closed by a segment connecting the last point back to the first one
-  ///
-  /// [geodesic]       the polyline is composed of great circle segments if geodesic
-  ///                       is true, and of Rhumb segments otherwise
-  ///
-  /// [toleranceEarth] tolerance (in meters)
-  ///
-  /// Returns -1 if point does not lie on or near the polyline.
-  ///
-  /// 0 if point is between `poly[0]` and `poly[1]` (inclusive),
-  ///
-  /// 1 if between `poly[1]` and `poly[2]`,
-  ///
-  /// poly.size()-2 if between `poly[poly.size() - 2]` and `poly[poly.size() - 1]`
+  /// Returns -1 if the point does not lie on or near the polyline.
+  /// Returns 0 if the point is between `poly[0]` and `poly[1]` (inclusive),
+  /// 1 if between `poly[1]` and `poly[2]`, etc.
   static int locationIndexOnEdgeOrPath(
       Point<double> point,
       List<Point<double>> poly,
@@ -241,16 +212,16 @@ class PolyUtils {
         idx++;
       }
     } else {
-      // We project the points to mercator space, where the Rhumb segment is a straight line,
-      // and compute the geodesic distance between point3 and the closest point on the
-      // segment. This method is an approximation, because it uses "closest" in mercator
-      // space which is not "closest" on the sphere -- but the error is small because
-      // "tolerance" is small.
+      // We project the points to mercator space, where the Rhumb segment is a
+      // straight line, and compute the geodesic distance between point3 and the
+      // closest point on the segment. This method is an approximation, because
+      // it uses "closest" in mercator space which is not "closest" on the
+      // sphere — but the error is small because "tolerance" is small.
       final minAcceptable = lat3 - tolerance;
       final maxAcceptable = lat3 + tolerance;
       double y1 = MathUtils.mercator(lat1);
       final y3 = MathUtils.mercator(lat3);
-      final xTry = List<double>.generate(3, (index) => 0);
+      final xTry = List<double>.filled(3, 0.0);
       for (final point2 in poly) {
         final lat2 = SphericalUtils.toRadians(point2.x);
         final y2 = MathUtils.mercator(lat2);
@@ -268,7 +239,7 @@ class PolyUtils {
             final dy = y2 - y1;
             final len2 = x2 * x2 + dy * dy;
             final t = len2 <= 0
-                ? 0
+                ? 0.0
                 : MathUtils.clamp((x3 * x2 + (y3 - y1) * dy) / len2, 0, 1);
             final xClosest = t * x2;
             final yClosest = y1 + t * dy;
@@ -288,8 +259,8 @@ class PolyUtils {
     return -1;
   }
 
-  /// Returns sin(initial bearing from (lat1,lng1) to (lat3,lng3) minus initial bearing
-  /// from (lat1, lng1) to (lat2,lng2)).
+  /// Returns sin(initial bearing from (lat1,lng1) to (lat3,lng3) minus initial
+  /// bearing from (lat1, lng1) to (lat2,lng2)).
   static double _sinDeltaBearing(double lat1, double lng1, double lat2,
       double lng2, double lat3, double lng3) {
     final sinLat1 = sin(lat1);
@@ -346,52 +317,50 @@ class PolyUtils {
     return sinSumAlongTrack > 0;
   }
 
-  /// Simplifies the given poly (polyline or polygon) using the Douglas-Peucker decimation
-  /// algorithm.  Increasing the tolerance will result in fewer points in the simplified polyline
-  /// or polygon.
+  /// Simplifies the given [poly] (polyline or polygon) using the Douglas-Peucker
+  /// decimation algorithm. Increasing the [tolerance] will result in fewer points
+  /// in the simplified polyline or polygon.
   ///
-  /// When the providing a polygon as input, the first and last point of the list MUST have the
-  /// same x and y (i.e., the polygon must be closed).  If the input polygon is not
-  /// closed, the resulting polygon may not be fully simplified.
+  /// When providing a polygon as input, the first and last point of the list
+  /// MUST have the same x and y (i.e., the polygon must be closed). If the
+  /// input polygon is not closed, the resulting polygon may not be fully
+  /// simplified.
   ///
-  /// The time complexity of Douglas-Peucker is O(n^2), so take care that you do not call this
-  /// algorithm too frequently in your code.
+  /// The time complexity of Douglas-Peucker is O(n²), so take care that you do
+  /// not call this algorithm too frequently in your code.
   ///
-  /// [poly]      polyline or polygon to be simplified.  Polygon should be closed (i.e.,
-  ///                  first and last points should have the same x and y).
+  /// Returns a simplified poly produced by the Douglas-Peucker algorithm.
   ///
-  /// [tolerance] in meters.  Increasing the tolerance will result in fewer points in the
-  ///                  simplified poly.
-  ///
-  /// Returns a simplified poly produced by the Douglas-Peucker algorithm
+  /// Note: this method does **not** mutate the input list.
   static List<Point<double>> simplify(
       List<Point<double>> poly, double tolerance) {
     final n = poly.length;
     if (n < 1) {
-      throw Exception("Polyline must have at least 1 point");
+      throw ArgumentError('Polyline must have at least 1 point');
     }
     if (tolerance <= 0) {
-      throw Exception("Tolerance must be greater than zero");
+      throw ArgumentError('Tolerance must be greater than zero');
     }
 
     final closedPolygon = isClosedPolygon(poly);
-    Point<double>? lastPoint = null;
 
-    // Check if the provided poly is a closed polygon
+    // Work on a copy to avoid mutating the caller's list.
+    final working = List<Point<double>>.of(poly);
+
     if (closedPolygon) {
-      // Add a small offset to the last point for Douglas-Peucker on polygons (see #201)
-      final offset = 0.00000000001;
-      lastPoint = poly[poly.length - 1];
-      // Point<double>.x and .y are immutable, so replace the last point
-      poly.removeAt(poly.length - 1);
-      poly.add(Point(lastPoint.x + offset, lastPoint.y + offset));
+      // Add a small offset to the last point for Douglas-Peucker on polygons
+      // (see android-maps-utils #201).
+      final lastPoint = working[working.length - 1];
+      const offset = 0.00000000001;
+      working[working.length - 1] =
+          Point(lastPoint.x + offset, lastPoint.y + offset);
     }
 
     // Douglas-Peucker, iterative (stack-based) to avoid deep recursion.
     int idx = 0;
     int maxIdx = 0;
     final stack = Stack<List<int>>();
-    final dists = List<double>.generate(n, (index) => 0);
+    final dists = List<double>.filled(n, 0.0);
     dists[0] = 1;
     dists[n - 1] = 1;
     double maxDist = 0.0;
@@ -399,13 +368,13 @@ class PolyUtils {
     List<int> current = [];
 
     if (n > 2) {
-      final stackVal = <int>[0, (n - 1)];
-      stack.push(stackVal);
+      stack.push([0, n - 1]);
       while (stack.isNotEmpty) {
         current = stack.pop();
         maxDist = 0;
         for (idx = current[0] + 1; idx < current[1]; ++idx) {
-          dist = distanceToLine(poly[idx], poly[current[0]], poly[current[1]]);
+          dist = distanceToLine(
+              working[idx], working[current[0]], working[current[1]]);
           if (dist > maxDist) {
             maxDist = dist;
             maxIdx = idx;
@@ -413,40 +382,29 @@ class PolyUtils {
         }
         if (maxDist > tolerance) {
           dists[maxIdx] = maxDist;
-          final stackValCurMax = <int>[current[0], maxIdx];
-          stack.push(stackValCurMax);
-          final stackValMaxCur = <int>[maxIdx, current[1]];
-          stack.push(stackValMaxCur);
+          stack.push([current[0], maxIdx]);
+          stack.push([maxIdx, current[1]]);
         }
       }
     }
 
-    if (closedPolygon && lastPoint != null) {
-      // Replace last point w/ offset with the original last point to re-close the polygon
-      poly.removeAt(poly.length - 1);
-      poly.add(lastPoint);
+    // If the polygon was closed, restore the exact original last point.
+    if (closedPolygon) {
+      working[working.length - 1] = poly[poly.length - 1];
     }
 
-    // Generate the simplified line
-    idx = 0;
+    // Generate the simplified line.
     final simplifiedLine = <Point<double>>[];
-    for (final l in poly) {
-      if (dists[idx] != 0) {
-        simplifiedLine.add(l);
+    for (int i = 0; i < n; i++) {
+      if (dists[i] != 0) {
+        simplifiedLine.add(working[i]);
       }
-      idx++;
     }
     return simplifiedLine;
   }
 
-  /// Returns true if the provided list of points is a closed polygon (i.e., the first and last
-  /// points are the same), and false if it is not
-  ///
-  /// [poly] polyline or polygon
-  ///
-  /// Returns true if the provided list of points is a closed polygon (i.e., the first and last
-  /// points are the same), and false if it is not
-
+  /// Returns true if [poly] is a closed polygon (i.e., the first and last
+  /// points are the same).
   static bool isClosedPolygon(List<Point<double>> poly) {
     if (poly.isEmpty) return false;
     final firstPoint = poly[0];
@@ -454,15 +412,10 @@ class PolyUtils {
     return firstPoint == lastPoint;
   }
 
-  /// Computes the distance on the sphere between the point p and the line segment start to end.
+  /// Computes the distance on the sphere between the point [p] and the line
+  /// segment from [start] to [end].
   ///
-  /// [p]     the point to be measured
-  ///
-  /// [start] the beginning of the line segment
-  ///
-  /// [end]   the end of the line segment
-  ///
-  /// Returns the distance in meters (assuming spherical earth)
+  /// Returns the distance in meters (assuming spherical earth).
   static double distanceToLine(final Point<double> p, final Point<double> start,
       final Point<double> end) {
     if (start == end) {
@@ -494,7 +447,9 @@ class PolyUtils {
     return SphericalUtils.computeDistanceBetween(p, latLng);
   }
 
-  /// Decodes an encoded path string into a sequence of LatLngs.
+  /// Decodes an encoded path string into a sequence of points.
+  ///
+  /// Uses the [Encoded Polyline Algorithm](https://developers.google.com/maps/documentation/utilities/polylinealgorithm).
   static List<Point<double>> decode(final String encodedPath) {
     final len = encodedPath.length;
 
@@ -529,7 +484,9 @@ class PolyUtils {
     return path;
   }
 
-  /// Encodes a sequence of LatLngs into an encoded path string.
+  /// Encodes a sequence of points into an encoded path string.
+  ///
+  /// Uses the [Encoded Polyline Algorithm](https://developers.google.com/maps/documentation/utilities/polylinealgorithm).
   static String encode(final List<Point<double>> path) {
     int lastLat = 0;
     int lastLng = 0;
@@ -540,11 +497,8 @@ class PolyUtils {
       final lat = (point.x * 1e5).round();
       final lng = (point.y * 1e5).round();
 
-      final dLat = lat - lastLat;
-      final dLng = lng - lastLng;
-
-      _encode(dLat, result);
-      _encode(dLng, result);
+      _encode(lat - lastLat, result);
+      _encode(lng - lastLng, result);
 
       lastLat = lat;
       lastLng = lng;

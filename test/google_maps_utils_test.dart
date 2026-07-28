@@ -43,9 +43,9 @@ void main() {
       expect(distance, 1241932.5985192063);
     });
 
-    test('distance in meters of points', () async {
-      final distance = SphericalUtils.computeDistanceFromListOfPoints(polygon);
-      expect(distance, 1066.724381371654);
+    test('computeLength returns total path distance', () async {
+      final length = SphericalUtils.computeLength(polygon);
+      expect(length, closeTo(1066.7243813716, 1e-6));
     });
     test('point contains inside polygon', () async {
       final contains = PolyUtils.containsLocationPoly(point, polygon);

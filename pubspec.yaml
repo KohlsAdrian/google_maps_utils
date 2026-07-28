@@ -8,10 +8,16 @@ homepage: https://github.com/KohlsAdrian/google_maps_utils/
 repository: https://github.com/KohlsAdrian/google_maps_utils
 funding:
   - https://bus2.me
-version: 3.0.0
+topics:
+  - maps
+  - geolocation
+  - polyline
+  - geometry
+  - geodesy
+version: 4.0.0
 
 environment:
-  sdk: '>=2.12.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 dev_dependencies:
   lints: ^6.1.0
   test: ^1.19.4

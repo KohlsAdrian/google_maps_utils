@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Map pin body -->
+  <path d="M100 12C67 12 40 39 40 72c0 44 53.5 105 57.3 109.2a3.5 3.5 0 0 0 5.4 0C106.5 177 160 116 160 72c0-33-27-60-60-60z" fill="#EA4335"/>
+
+  <!-- Pin left shadow -->
+  <path d="M100 12C67 12 40 39 40 72c0 44 53.5 105 57.3 109.2a3.5 3.5 0 0 0 2.7 1.3V12z" fill="#C5221F"/>
+
+  <!-- White circle inside pin -->
+  <circle cx="100" cy="72" r="26" fill="white"/>
+
+  <!-- Inner blue circle (represents location dot) -->
+  <circle cx="100" cy="72" r="12" fill="#4285F4"/>
+
+  <!-- Small white center dot -->
+  <circle cx="100" cy="72" r="5" fill="white"/>
+
+  <!-- Crosshair lines -->
+  <line x1="100" y1="48" x2="100" y2="58" stroke="#4285F4" stroke-width="3" stroke-linecap="round"/>
+  <line x1="100" y1="86" x2="100" y2="96" stroke="#4285F4" stroke-width="3" stroke-linecap="round"/>
+  <line x1="76" y1="72" x2="86" y2="72" stroke="#4285F4" stroke-width="3" stroke-linecap="round"/>
+  <line x1="114" y1="72" x2="124" y2="72" stroke="#4285F4" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Polyline route with waypoints -->
+  <polyline points="48,140 72,152 100,157 128,150 154,136" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+  <circle cx="48" cy="140" r="4" fill="white"/>
+  <circle cx="154" cy="136" r="4" fill="white"/>
+</svg>

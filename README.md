@@ -1,100 +1,459 @@
-# An Android Google Maps Utils original java project port for Flutter
+<p align="center">
+  <img src="maps-icon.svg" width="120" alt="Google Maps Utils for Flutter">
+</p>
 
-A Flutter/Dart project based on Android Google Maps Utils converted/ported to Dart/Flutter
-There are many packages that features Google Maps Utils, but none has the 3 main classes
-from the sources
+<h1 align="center">Google Maps Utils for Dart/Flutter</h1>
 
-## Funding
+<p align="center">
+  A faithful Dart port of the core geometry classes from Google's
+  <a href="https://github.com/googlemaps/android-maps-utils">android-maps-utils</a> library.
+</p>
+
+<p align="center">
+  <a href="https://pub.dev/packages/google_maps_utils"><img src="https://img.shields.io/pub/v/google_maps_utils.svg?label=pub&color=blue" alt="Pub Version"></a>
+  <a href="https://pub.dev/packages/google_maps_utils/score"><img src="https://img.shields.io/pub/points/google_maps_utils?color=2E8B57&label=pub%20points" alt="Pub Points"></a>
+  <a href="https://pub.dev/packages/google_maps_utils"><img src="https://img.shields.io/pub/popularity/google_maps_utils?color=orange" alt="Popularity"></a>
+  <a href="https://pub.dev/packages/google_maps_utils"><img src="https://img.shields.io/pub/likes/google_maps_utils?color=red&label=pub%20likes" alt="Pub Likes"></a>
+  <a href="https://github.com/KohlsAdrian/google_maps_utils"><img src="https://img.shields.io/github/stars/KohlsAdrian/google_maps_utils?style=flat&color=gold" alt="GitHub Stars"></a>
+  <a href="https://github.com/KohlsAdrian/google_maps_utils/network/members"><img src="https://img.shields.io/github/forks/KohlsAdrian/google_maps_utils?style=flat&color=slateblue" alt="GitHub Forks"></a>
+  <a href="https://github.com/KohlsAdrian/google_maps_utils/issues"><img src="https://img.shields.io/github/issues/KohlsAdrian/google_maps_utils?color=coral" alt="GitHub Issues"></a>
+  <a href="https://github.com/KohlsAdrian/google_maps_utils/blob/master/LICENSE"><img src="https://img.shields.io/github/license/KohlsAdrian/google_maps_utils?color=teal" alt="License"></a>
+  <a href="https://github.com/KohlsAdrian/google_maps_utils/actions"><img src="https://github.com/KohlsAdrian/google_maps_utils/actions/workflows/dart.yml/badge.svg" alt="CI"></a>
+</p>
+
+---
+
+## ✨ Features
+
+| Class | What it does |
+|-------|--------------|
+| **`SphericalUtils`** | Distances, headings, offsets, interpolation, areas, and bounding boxes on a sphere |
+| **`PolyUtils`** | Polyline encoding/decoding, Douglas-Peucker simplification, point-in-polygon, and on-path/on-edge tests |
+| **`MathUtils`** | Low-level haversine, Mercator projections, clamping, and wrapping helpers |
+
+All calculations use the same spherical algorithms as the original Android Java/Kotlin library — results are identical.
+
+---
+
+## 🚀 Getting Started
+
+### Installation
+
+Add to your `pubspec.yaml`:
+
+```yaml
+dependencies:
+  google_maps_utils: ^4.0.0
+```
+
+Then run:
+
+```bash
+dart pub get
+```
+
+### Import
+
+```dart
+import 'package:google_maps_utils/google_maps_utils.dart';
+```
+
+### Quick Start — Facade Pattern
+
+Use the `GoogleMapsUtils` class as a unified namespace:
+
+```dart
+// Spherical geometry
+final distance = GoogleMapsUtils.spherical.computeDistanceBetween(from, to);
+final heading = GoogleMapsUtils.spherical.computeHeading(from, to);
+
+// Polyline utilities
+final path = GoogleMapsUtils.poly.decode(encodedString);
+final simplified = GoogleMapsUtils.poly.simplify(path, 5000.0);
+
+// Math helpers
+final wrapped = GoogleMapsUtils.math.wrap(190.0, -180.0, 180.0); // -170.0
+```
+
+The original static classes (`SphericalUtils`, `PolyUtils`, `MathUtils`) remain available for direct access if you prefer.
+
+---
+
+## 📖 Usage
+
+### Distance Between Two Points
+
+```dart
+final from = Point<double>(0.0, 0.0);
+final to = Point<double>(10.0, 5.0);
+
+final distance = SphericalUtils.computeDistanceBetween(from, to);
+// 1241932.5985192063 meters
+```
+
+### Heading (Bearing)
+
+```dart
+final heading = SphericalUtils.computeHeading(from, to);
+// 26.302486345342523 degrees (clockwise from North)
+```
+
+### Angle Between Points
+
+```dart
+final angle = SphericalUtils.computeAngleBetween(from, to);
+// 0.19493500057547358 radians (unit-sphere arc distance)
+```
+
+### Compute Offset (Move a Point)
+
+```dart
+// Move 1000 meters east (heading 90°) from the origin
+final origin = Point<double>(0.0, 0.0);
+final destination = SphericalUtils.computeOffset(origin, 1000.0, 90.0);
+// Returns the Point at the new location
+```
+
+### Compute Offset Origin (Reverse Lookup)
+
+```dart
+// Given a destination, distance, and heading — find where you started
+final origin = SphericalUtils.computeOffsetOrigin(destination, 1000.0, 90.0);
+// Returns Point? (null if no solution exists)
+```
+
+### Interpolation (SLERP)
+
+```dart
+// Find the point 25% of the way between two locations
+final quarter = SphericalUtils.interpolate(from, to, 0.25);
+```
+
+### Path Length
+
+```dart
+final path = <Point<double>>[
+  Point(0.0, 0.0),
+  Point(1.0, 1.0),
+  Point(2.0, 0.0),
+];
+
+final length = SphericalUtils.computeLength(path);
+// Total distance in meters along the path
+```
+
+### Compass Cardinal Direction
+
+```dart
+final cardinal = SphericalUtils.getCardinal(45.0);
+// 'NE'
+
+final cardinal2 = SphericalUtils.getCardinal(200.0);
+// 'SSW'
+```
+
+### Polyline Decoding
+
+```dart
+// Decode a Google Encoded Polyline string into coordinates
+final path = PolyUtils.decode(
+    'wjiaFz`hgQs}GmmBok@}vX|cOzKvvT`uNutJz|UgqAglAjr@ijBz]opA');
+// Returns List<Point<double>> with 17 points
+```
+
+### Polyline Encoding
+
+```dart
+// Encode coordinates back to a compact string
+final encoded = PolyUtils.encode(path);
+```
+
+### Douglas-Peucker Simplification
+
+```dart
+// Reduce points while preserving shape (tolerance in meters)
+final simplified = PolyUtils.simplify(path, 5000.0);
+// 17 points → 6 points
+```
+
+### Point-in-Polygon
+
+```dart
+final point = Point<double>(-31.623060, -60.686690);
+
+final polygon = <Point<double>>[
+  Point(-31.624115, -60.688734),
+  Point(-31.624115, -60.684657),
+  Point(-31.621594, -60.686717),
+  Point(-31.624115, -60.688734),
+];
+
+final isInside = PolyUtils.containsLocationPoly(point, polygon);
+// true
+
+// Also supports geodesic (great-circle) edges:
+final isInsideGeodesic = PolyUtils.containsLocationPoly(
+  point, polygon, geodesic: true,
+);
+```
+
+### Point-on-Path Detection
+
+```dart
+final route = <Point<double>>[
+  Point(0.0, 0.0),
+  Point(0.0, 10.0),
+];
+
+// Is the point on or near the polyline? (default tolerance: 0.1m)
+final isOnPath = PolyUtils.isLocationOnPath(
+  Point(0.0, 5.0), route, true, // geodesic
+);
+// true
+
+// Get which segment the point falls on
+final segmentIndex = PolyUtils.locationIndexOnPath(
+  Point(0.0, 5.0), route, true,
+);
+// 0 (between route[0] and route[1])
+```
+
+### Point-on-Edge (Polygon Boundary)
+
+```dart
+final square = <Point<double>>[
+  Point(0.0, 0.0),
+  Point(0.0, 10.0),
+  Point(10.0, 10.0),
+  Point(10.0, 0.0),
+];
+
+// Includes the closing segment (last→first)
+final isOnEdge = PolyUtils.isLocationOnEdge(
+  Point(5.0, 0.0), square, true,
+);
+// true
+```
+
+### Distance to a Line Segment
+
+```dart
+final p = Point<double>(-23.54545, -23.898098);
+final start = Point<double>(0.0, 0.0);
+final end = Point<double>(10.0, 5.0);
+
+final dist = PolyUtils.distanceToLine(p, start, end);
+// 3675538.019968191 meters
+```
+
+### Compute Area
+
+```dart
+final area = SphericalUtils.computeArea(polygon);
+// Area in square meters
+
+final signedArea = SphericalUtils.computeSignedArea(polygon);
+// Positive = counter-clockwise, negative = clockwise
+```
+
+### Bounding Boxes
+
+```dart
+// Create bounds from a center point + radius
+final bounds = SphericalUtils.toBounds(-23.55, -46.63, 1000.0);
+
+// Create bounds from a list of points
+final bounds = SphericalUtils.toBoundsFromPoints(path);
+
+// Get the center of a bounds
+final center = SphericalUtils.centerFromLatLngBounds(bounds);
+
+// Split bounds into a grid (division² sub-bounds)
+final tiles = SphericalUtils.toSubBounds(bounds, division: 3);
+// Returns 9 sub-bounds
+```
+
+### Closed Polygon Check
+
+```dart
+PolyUtils.isClosedPolygon(polygon); // true if first == last point
+```
+
+### Custom Tolerance (On-Path / On-Edge)
+
+```dart
+// Default tolerance is 0.1 meters. Use custom tolerance for proximity:
+final isNear = PolyUtils.isLocationOnPathTolerance(
+  point, polyline, true, 50.0, // 50 meters tolerance
+);
+
+// Same for edges:
+final isNearEdge = PolyUtils.isLocationOnEdgeTolerance(
+  point, polygon, true, 50.0,
+);
+
+// With index:
+final idx = PolyUtils.locationIndexOnPathTolerance(
+  point, polyline, true, 50.0,
+);
+```
+
+### MathUtils (Low-Level Helpers)
+
+```dart
+// Clamp a value to a range
+MathUtils.clamp(15.0, 0.0, 10.0); // 10.0
+
+// Wrap a value into [min, max) — useful for longitude
+MathUtils.wrap(190.0, -180.0, 180.0); // -170.0
+
+// Non-negative modulo
+MathUtils.mod(-1.0, 360.0); // 359.0
+
+// Mercator projection (radians)
+final y = MathUtils.mercator(latInRadians);
+final lat = MathUtils.inverseMercator(y);
+
+// Haversine / inverse haversine
+final h = MathUtils.hav(angleInRadians);
+final angle = MathUtils.arcHav(h);
+
+// Haversine distance on unit sphere
+final havDist = MathUtils.havDistance(lat1, lat2, dLng);
+```
+
+### Degree / Radian Conversions
+
+```dart
+SphericalUtils.toRadians(90.0);  // 1.5707963... (π/2)
+SphericalUtils.toDegrees(pi);    // 180.0
+```
+
+---
+
+## 📋 Full Example
+
+See [`example/example.dart`](example/example.dart) for a complete runnable demo covering all features.
+
+<details>
+<summary>Click to expand example output</summary>
+
+```
+Heading: 26.302486345342523 degrees
+Angle: 0.19493500057547358 radians
+Distance to Line: 3675538.019968191 meters
+path size length: 17
+simplified path: wjiaFz`hgQcjIke\t{d@|aOutJz|UokC}xWomJdjM
+path size simplified length: 6
+Distance: 1241932.5985192063 meters
+Distance: 1066.7243813716539 meters of polygon
+point is inside polygon?: true
+```
+
+</details>
+
+---
+
+## 📐 API Reference
+
+### `SphericalUtils`
+
+| Method | Description |
+|--------|-------------|
+| `computeDistanceBetween(from, to)` | Distance in meters between two points |
+| `computeHeading(from, to)` | Heading in degrees \[-180, 180) |
+| `computeAngleBetween(from, to)` | Angle in radians (unit-sphere distance) |
+| `computeOffset(from, distance, heading)` | Point at a given distance/heading |
+| `computeOffsetOrigin(to, distance, heading)` | Inverse of `computeOffset` |
+| `interpolate(from, to, fraction)` | Spherical interpolation (SLERP) |
+| `computeLength(path)` | Total path length in meters |
+| `computeArea(path)` | Enclosed area in m² |
+| `computeSignedArea(path)` | Signed area (determines winding) |
+| `distanceRadians(lat1, lng1, lat2, lng2)` | Arc distance on unit sphere (radians in, radians out) |
+| `toBounds(lat, lng, radius)` | Bounding box from center + radius |
+| `toBoundsFromPoints(points)` | Bounding box from point list |
+| `centerFromLatLngBounds(bounds)` | Center point of a bounds |
+| `toSubBounds(bounds, division:)` | Split bounds into a grid |
+| `getCardinal(angle)` | 16-point compass abbreviation |
+| `toRadians(deg)` | Degrees to radians |
+| `toDegrees(rad)` | Radians to degrees |
+
+### `PolyUtils`
+
+| Method | Description |
+|--------|-------------|
+| `decode(encoded)` | Decode a polyline string to points |
+| `encode(path)` | Encode points to a polyline string |
+| `simplify(poly, tolerance)` | Douglas-Peucker simplification |
+| `containsLocationPoly(point, polygon)` | Spherical point-in-polygon test |
+| `isLocationOnPath(point, polyline, geodesic)` | Point-on-polyline test (0.1m tolerance) |
+| `isLocationOnPathTolerance(point, polyline, geodesic, tolerance)` | Point-on-polyline with custom tolerance |
+| `isLocationOnEdge(point, polygon, geodesic)` | Point-on-polygon-edge test (0.1m tolerance) |
+| `isLocationOnEdgeTolerance(point, polygon, geodesic, tolerance)` | Point-on-edge with custom tolerance |
+| `locationIndexOnPath(point, polyline, geodesic)` | Segment index or -1 |
+| `locationIndexOnPathTolerance(point, poly, geodesic, tolerance)` | Segment index with custom tolerance |
+| `locationIndexOnEdgeOrPath(point, poly, closed, geodesic, tolerance)` | Full control: closed/open + tolerance |
+| `distanceToLine(point, start, end)` | Distance to a line segment |
+| `isClosedPolygon(poly)` | Whether first == last point |
+
+### `MathUtils`
+
+| Method | Description |
+|--------|-------------|
+| `earthRadius` | Earth's mean radius in meters (6371008.7714) |
+| `clamp(x, low, high)` | Restrict value to range |
+| `wrap(n, min, max)` | Wrap into \[min, max) |
+| `mod(x, m)` | Non-negative modulo |
+| `hav(x)` | Haversine |
+| `arcHav(x)` | Inverse haversine |
+| `sinFromHav(h)` | sin(\|x\|) given hav(x) |
+| `havFromSin(x)` | hav(asin(x)) |
+| `sinSumFromHav(x, y)` | sin(arcHav(x) + arcHav(y)) |
+| `mercator(lat)` | Latitude (radians) → Mercator Y |
+| `inverseMercator(y)` | Mercator Y → latitude (radians) |
+| `havDistance(lat1, lat2, dLng)` | Haversine distance on unit sphere |
+
+---
+
+## 📊 Status
+
+**3 of 78** classes from android-maps-utils have been converted — these are the most widely used. Need another class? [Open an issue](https://github.com/KohlsAdrian/google_maps_utils/issues) and I'll prioritize it.
+
+---
+
+## 💚 Sponsor
 
 This package is proudly sponsored by **[bus2.me](https://bus2.me)**.
 
-## Status: 3 of 78 classes converted
+If this package saves you time, consider supporting its development.
 
-This is a project for converting all of the tools from Android Google Maps Utils partially.
-Initial commits from the 3 main Classes, MathUtils.java, PolyUtils.java and SphericalUtils.java
-The same rules for calculating bounds, distance between two Point points and other polyline features are the same as used on Android native Java/Kotlin logic.
-All of the methods of current classes available are ported
-You can request classes for me to port as an issue, the classes ported are what most people uses
+---
 
-## Feature links for reasearch
+## 🔗 Links
 
-Main project: <https://github.com/googlemaps/android-maps-utils>
-Main project questions: <https://stackoverflow.com/questions/tagged/android-maps-utils>
-Fluttert community request: <https://github.com/flutter/flutter/issues/24689>
+- 📦 [pub.dev package](https://pub.dev/packages/google_maps_utils)
+- 📖 [API documentation](https://pub.dev/documentation/google_maps_utils/latest/)
+- 🐛 [Issue tracker](https://github.com/KohlsAdrian/google_maps_utils/issues)
+- 🤖 [android-maps-utils (upstream)](https://github.com/googlemaps/android-maps-utils)
+- 💬 [Stack Overflow](https://stackoverflow.com/questions/tagged/android-maps-utils)
+- 🦋 [Flutter community request](https://github.com/flutter/flutter/issues/24689)
 
-## Example *.dart
+---
 
-```dart
-    import 'package:google_maps_utils/google_maps_utils.dart';
+## 🤝 Contributing
 
-    void main() {
-        Point<double> from = Point(0.0, 0.0);
-        Point<double> to = Point(10.0, 5.0);
-        Point<double> randomPoint = Point(-23.54545, -23.898098);
+Contributions are welcome! Please:
 
-        double distance = SphericalUtils.computeDistanceBetween(from, to);
-        print('Distance: $distance meters');
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes with tests
+4. Ensure `dart analyze --fatal-infos` and `dart test` pass
+5. Open a Pull Request
 
-        double heading = SphericalUtils.computeHeading(from, to);
-        print('Heading: $heading degrees');
+---
 
-        double angle = SphericalUtils.computeAngleBetween(from, to);
-        print('Angle: $angle degrees');
+## 📄 License
 
-        double distanceToAB = PolyUtils.distanceToLine(randomPoint, from, to);
-        print('Distance to Line: $distanceToAB meters');
+This project is licensed under the Apache License 2.0 — see the [LICENSE](LICENSE) file for details.
 
-        /// Distance: 1241932.5985192063
-        /// Heading: 26.302486345342523
-        /// Angle: 0.19493500057547358
-        /// Distance to Line: 3675538.019968191
-
-        /// See grid path on: https://developers.google.com/maps/documentation/utilities/polylinealgorithm
-
-        List<Point<double>> path = PolyUtils.decode(
-            'wjiaFz`hgQs}GmmBok@}vX|cOzKvvT`uNutJz|UgqAglAjr@ijBz]opA|Vor@}ViqEokCaiGu|@byAkjAvrMgjDj_A??ey@abD');
-
-        print('path size length: ${path.length}');
-
-        List<Point<double>> simplifiedPath = PolyUtils.simplify(path, 5000);
-        String simplifiedPathEncoded = PolyUtils.encode(simplifiedPath);
-
-        print('simplified path: $simplifiedPathEncoded');
-        print('path size simplified length: ${simplifiedPath.length}');
-
-
-        /// Example by: https://github.com/nicolascav
-        Point<double> point = Point(-31.623060136389135, -60.68669021129609);
-
-        /// Triangle
-        List<Point<double>> polygon = [
-            Point(-31.624115, -60.688734),
-            Point(-31.624115, -60.684657),
-            Point(-31.621594, -60.686717),
-            Point(-31.624115, -60.688734),
-        ];
-
-        bool contains = PolyUtils.containsLocationPoly(point, polygon);
-        print('point is inside polygon?: $contains');
-
-        /// And Many more
-    }
-```
-
-## Result
-
-- Distance: 1241932.5985192063 meters
-
-- Heading: 26.302486345342523 degrees
-
-- Angle: 0.19493500057547358 degrees
-
-- Distance to Line: 3675538.019968191 meters
-
-- path size length: 17
-
-- simplified path: wjiaFz`hgQcjIke\t{d@|aOutJz|UokC}xWomJdjM
-
-- path size simplified length: 6
-
-- point is inside polygon?: true
+Original Java source: Copyright 2008, 2013 Google Inc.
