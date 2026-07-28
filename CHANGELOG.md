@@ -1,5 +1,55 @@
 # Changelog
 
+## 5.0.0
+
+### ⚠️ BREAKING CHANGES
+
+* **`SphericalUtils`, `MathUtils`, and `PolyUtils` are no longer publicly
+  exported.** These classes have been moved to `lib/src/` (package-private)
+  and can no longer be imported directly. All functionality is now accessed
+  exclusively through the `GoogleMapsUtils` facade class:
+
+  ```dart
+  // Before (v4.x) — no longer works:
+  SphericalUtils.computeDistanceBetween(from, to);
+  PolyUtils.decode(encoded);
+  MathUtils.wrap(190, -180, 180);
+
+  // After (v5.0) — use the facade:
+  GoogleMapsUtils.spherical.computeDistanceBetween(from, to);
+  GoogleMapsUtils.poly.decode(encoded);
+  GoogleMapsUtils.math.wrap(190, -180, 180);
+  ```
+
+* **`GoogleMapsUtilsLatLngBounds` is now a lightweight record typedef** instead
+  of a class. Bounding box methods return and accept a Dart record:
+  ```dart
+  // Type: ({Point<double> ne, Point<double> sw})
+  final bounds = GoogleMapsUtils.spherical.toBounds(-23.55, -46.63, 1000.0);
+  print(bounds.ne); // north-east corner
+  print(bounds.sw); // south-west corner
+  ```
+  If you previously accessed `.northEast` / `.southWest`, replace with
+  `.ne` / `.sw`.
+
+### Migration Guide
+
+1. Replace all `SphericalUtils.<method>(...)` calls with
+   `GoogleMapsUtils.spherical.<method>(...)`.
+2. Replace all `PolyUtils.<method>(...)` calls with
+   `GoogleMapsUtils.poly.<method>(...)`.
+3. Replace all `MathUtils.<method>(...)` calls with
+   `GoogleMapsUtils.math.<method>(...)`.
+4. Remove any direct imports of the old files
+   (`package:google_maps_utils/spherical_utils.dart`, etc.).
+5. Replace `bounds.northEast` / `bounds.southWest` with `bounds.ne` / `bounds.sw`.
+
+### Other Changes
+
+* Moved utility source files to `lib/src/` for proper encapsulation.
+* Updated example and tests to use the facade pattern exclusively.
+* Removed `computeSignedAreaTest` from the public API (it was a test helper).
+
 ## 4.0.0
 
 * **BREAKING:** removed `SphericalUtils.computeDistanceFromListOfPoints`.

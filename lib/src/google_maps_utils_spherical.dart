@@ -13,34 +13,9 @@
 //  limitations under the License.
 import 'dart:math';
 
-import 'package:google_maps_utils/google_maps_utils.dart';
+import 'models/models.dart';
 
-/// Axis-aligned latitude/longitude bounding box.
-class GoogleMapsUtilsLatLngBounds {
-  /// The north-east corner of the bounding box.
-  final Point<double> northEast;
-
-  /// The south-west corner of the bounding box.
-  final Point<double> southWest;
-
-  /// Creates a bounding box from [northEast] and [southWest] corners.
-  GoogleMapsUtilsLatLngBounds(
-      {required this.northEast, required this.southWest});
-
-  @override
-  String toString() =>
-      'GoogleMapsUtilsLatLngBounds(ne: (${northEast.x}, ${northEast.y}), sw: (${southWest.x}, ${southWest.y}))';
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is GoogleMapsUtilsLatLngBounds &&
-          northEast == other.northEast &&
-          southWest == other.southWest;
-
-  @override
-  int get hashCode => Object.hash(northEast, southWest);
-}
+import 'google_maps_utils_math.dart';
 
 /// Spherical geometry utilities (distances, headings, areas, offsets,
 /// interpolation), ported from the android-maps-utils `SphericalUtil` class.
@@ -83,7 +58,7 @@ class SphericalUtils {
   /// [radiusInMeters].
   ///
   /// See: https://stackoverflow.com/a/31029389/3182210
-  static GoogleMapsUtilsLatLngBounds toBounds(
+  static LatLngBoundsModel toBounds(
       double x, double y, double radiusInMeters) {
     final center = Point<double>(x, y);
     final distanceFromCenterToCorner = radiusInMeters * sqrt(2.0);
@@ -91,7 +66,7 @@ class SphericalUtils {
         SphericalUtils.computeOffset(center, distanceFromCenterToCorner, 225.0);
     final northeastCorner =
         SphericalUtils.computeOffset(center, distanceFromCenterToCorner, 45.0);
-    return GoogleMapsUtilsLatLngBounds(
+    return LatLngBoundsModel(
       northEast: northeastCorner,
       southWest: southwestCorner,
     );
@@ -102,7 +77,7 @@ class SphericalUtils {
   /// Throws if [points] is empty.
   ///
   /// See: https://github.com/flutter/flutter/issues/36653#issuecomment-525288053
-  static GoogleMapsUtilsLatLngBounds toBoundsFromPoints(
+  static LatLngBoundsModel toBoundsFromPoints(
       List<Point<double>> points) {
     if (points.isEmpty) throw ArgumentError('Points cannot be empty');
 
@@ -118,7 +93,7 @@ class SphericalUtils {
       if (point.y < y0) y0 = point.y;
     }
 
-    return GoogleMapsUtilsLatLngBounds(
+    return LatLngBoundsModel(
       northEast: Point<double>(x1, y1),
       southWest: Point<double>(x0, y0),
     );
@@ -128,7 +103,7 @@ class SphericalUtils {
   ///
   /// See: https://stackoverflow.com/a/30859321/3182210
   static Point<double> centerFromLatLngBounds(
-      GoogleMapsUtilsLatLngBounds gmuLatLngBounds) {
+      LatLngBoundsModel gmuLatLngBounds) {
     final northEast = gmuLatLngBounds.northEast;
     final southWest = gmuLatLngBounds.southWest;
 
@@ -342,11 +317,11 @@ class SphericalUtils {
 
   /// Splits [bounds] into smaller sub-bounds. The number of resulting bounds
   /// equals [division]².
-  static List<GoogleMapsUtilsLatLngBounds> toSubBounds(
-    GoogleMapsUtilsLatLngBounds bounds, {
+  static List<LatLngBoundsModel> toSubBounds(
+    LatLngBoundsModel bounds, {
     int division = 2,
   }) {
-    final subBounds = <GoogleMapsUtilsLatLngBounds>[];
+    final subBounds = <LatLngBoundsModel>[];
 
     final northEast = bounds.northEast;
     final southWest = bounds.southWest;
@@ -368,7 +343,7 @@ class SphericalUtils {
         );
 
         subBounds.add(
-          GoogleMapsUtilsLatLngBounds(
+          LatLngBoundsModel(
               northEast: newNorthEast, southWest: newSouthWest),
         );
       }

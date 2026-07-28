@@ -13,8 +13,8 @@ import 'dart:math';
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import 'package:google_maps_utils/google_maps_utils.dart';
-
+import 'google_maps_utils_math.dart';
+import 'google_maps_utils_spherical.dart';
 import 'utils/stack.dart';
 
 /// Polyline and polygon utilities (point-in-polygon, on-path/on-edge tests,

@@ -25,11 +25,11 @@
 
 ## ✨ Features
 
-| Class | What it does |
-|-------|--------------|
-| **`SphericalUtils`** | Distances, headings, offsets, interpolation, areas, and bounding boxes on a sphere |
-| **`PolyUtils`** | Polyline encoding/decoding, Douglas-Peucker simplification, point-in-polygon, and on-path/on-edge tests |
-| **`MathUtils`** | Low-level haversine, Mercator projections, clamping, and wrapping helpers |
+| Namespace | What it does |
+|-----------|--------------|
+| **`GoogleMapsUtils.spherical`** | Distances, headings, offsets, interpolation, areas, and bounding boxes on a sphere |
+| **`GoogleMapsUtils.poly`** | Polyline encoding/decoding, Douglas-Peucker simplification, point-in-polygon, and on-path/on-edge tests |
+| **`GoogleMapsUtils.math`** | Low-level haversine, Mercator projections, clamping, and wrapping helpers |
 
 All calculations use the same spherical algorithms as the original Android Java/Kotlin library — results are identical.
 
@@ -43,7 +43,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  google_maps_utils: ^4.0.0
+  google_maps_utils: ^5.0.0
 ```
 
 Then run:
@@ -58,9 +58,9 @@ dart pub get
 import 'package:google_maps_utils/google_maps_utils.dart';
 ```
 
-### Quick Start — Facade Pattern
+### Quick Start
 
-Use the `GoogleMapsUtils` class as a unified namespace:
+Use the `GoogleMapsUtils` class as the unified namespace for all operations:
 
 ```dart
 // Spherical geometry
@@ -73,9 +73,12 @@ final simplified = GoogleMapsUtils.poly.simplify(path, 5000.0);
 
 // Math helpers
 final wrapped = GoogleMapsUtils.math.wrap(190.0, -180.0, 180.0); // -170.0
-```
 
-The original static classes (`SphericalUtils`, `PolyUtils`, `MathUtils`) remain available for direct access if you prefer.
+// Bounding boxes return a lightweight record: (ne: Point, sw: Point)
+final bounds = GoogleMapsUtils.spherical.toBounds(-23.55, -46.63, 1000.0);
+print(bounds.ne); // north-east corner
+print(bounds.sw); // south-west corner
+```
 
 ---
 
@@ -87,21 +90,21 @@ The original static classes (`SphericalUtils`, `PolyUtils`, `MathUtils`) remain 
 final from = Point<double>(0.0, 0.0);
 final to = Point<double>(10.0, 5.0);
 
-final distance = SphericalUtils.computeDistanceBetween(from, to);
+final distance = GoogleMapsUtils.spherical.computeDistanceBetween(from, to);
 // 1241932.5985192063 meters
 ```
 
 ### Heading (Bearing)
 
 ```dart
-final heading = SphericalUtils.computeHeading(from, to);
+final heading = GoogleMapsUtils.spherical.computeHeading(from, to);
 // 26.302486345342523 degrees (clockwise from North)
 ```
 
 ### Angle Between Points
 
 ```dart
-final angle = SphericalUtils.computeAngleBetween(from, to);
+final angle = GoogleMapsUtils.spherical.computeAngleBetween(from, to);
 // 0.19493500057547358 radians (unit-sphere arc distance)
 ```
 
@@ -110,7 +113,7 @@ final angle = SphericalUtils.computeAngleBetween(from, to);
 ```dart
 // Move 1000 meters east (heading 90°) from the origin
 final origin = Point<double>(0.0, 0.0);
-final destination = SphericalUtils.computeOffset(origin, 1000.0, 90.0);
+final destination = GoogleMapsUtils.spherical.computeOffset(origin, 1000.0, 90.0);
 // Returns the Point at the new location
 ```
 
@@ -118,7 +121,7 @@ final destination = SphericalUtils.computeOffset(origin, 1000.0, 90.0);
 
 ```dart
 // Given a destination, distance, and heading — find where you started
-final origin = SphericalUtils.computeOffsetOrigin(destination, 1000.0, 90.0);
+final origin = GoogleMapsUtils.spherical.computeOffsetOrigin(destination, 1000.0, 90.0);
 // Returns Point? (null if no solution exists)
 ```
 
@@ -126,7 +129,7 @@ final origin = SphericalUtils.computeOffsetOrigin(destination, 1000.0, 90.0);
 
 ```dart
 // Find the point 25% of the way between two locations
-final quarter = SphericalUtils.interpolate(from, to, 0.25);
+final quarter = GoogleMapsUtils.spherical.interpolate(from, to, 0.25);
 ```
 
 ### Path Length
@@ -138,17 +141,17 @@ final path = <Point<double>>[
   Point(2.0, 0.0),
 ];
 
-final length = SphericalUtils.computeLength(path);
+final length = GoogleMapsUtils.spherical.computeLength(path);
 // Total distance in meters along the path
 ```
 
 ### Compass Cardinal Direction
 
 ```dart
-final cardinal = SphericalUtils.getCardinal(45.0);
+final cardinal = GoogleMapsUtils.spherical.getCardinal(45.0);
 // 'NE'
 
-final cardinal2 = SphericalUtils.getCardinal(200.0);
+final cardinal2 = GoogleMapsUtils.spherical.getCardinal(200.0);
 // 'SSW'
 ```
 
@@ -156,7 +159,7 @@ final cardinal2 = SphericalUtils.getCardinal(200.0);
 
 ```dart
 // Decode a Google Encoded Polyline string into coordinates
-final path = PolyUtils.decode(
+final path = GoogleMapsUtils.poly.decode(
     'wjiaFz`hgQs}GmmBok@}vX|cOzKvvT`uNutJz|UgqAglAjr@ijBz]opA');
 // Returns List<Point<double>> with 17 points
 ```
@@ -165,14 +168,14 @@ final path = PolyUtils.decode(
 
 ```dart
 // Encode coordinates back to a compact string
-final encoded = PolyUtils.encode(path);
+final encoded = GoogleMapsUtils.poly.encode(path);
 ```
 
 ### Douglas-Peucker Simplification
 
 ```dart
 // Reduce points while preserving shape (tolerance in meters)
-final simplified = PolyUtils.simplify(path, 5000.0);
+final simplified = GoogleMapsUtils.poly.simplify(path, 5000.0);
 // 17 points → 6 points
 ```
 
@@ -188,11 +191,11 @@ final polygon = <Point<double>>[
   Point(-31.624115, -60.688734),
 ];
 
-final isInside = PolyUtils.containsLocationPoly(point, polygon);
+final isInside = GoogleMapsUtils.poly.containsLocationPoly(point, polygon);
 // true
 
 // Also supports geodesic (great-circle) edges:
-final isInsideGeodesic = PolyUtils.containsLocationPoly(
+final isInsideGeodesic = GoogleMapsUtils.poly.containsLocationPoly(
   point, polygon, geodesic: true,
 );
 ```
@@ -206,13 +209,13 @@ final route = <Point<double>>[
 ];
 
 // Is the point on or near the polyline? (default tolerance: 0.1m)
-final isOnPath = PolyUtils.isLocationOnPath(
+final isOnPath = GoogleMapsUtils.poly.isLocationOnPath(
   Point(0.0, 5.0), route, true, // geodesic
 );
 // true
 
 // Get which segment the point falls on
-final segmentIndex = PolyUtils.locationIndexOnPath(
+final segmentIndex = GoogleMapsUtils.poly.locationIndexOnPath(
   Point(0.0, 5.0), route, true,
 );
 // 0 (between route[0] and route[1])
@@ -229,7 +232,7 @@ final square = <Point<double>>[
 ];
 
 // Includes the closing segment (last→first)
-final isOnEdge = PolyUtils.isLocationOnEdge(
+final isOnEdge = GoogleMapsUtils.poly.isLocationOnEdge(
   Point(5.0, 0.0), square, true,
 );
 // true
@@ -242,17 +245,17 @@ final p = Point<double>(-23.54545, -23.898098);
 final start = Point<double>(0.0, 0.0);
 final end = Point<double>(10.0, 5.0);
 
-final dist = PolyUtils.distanceToLine(p, start, end);
+final dist = GoogleMapsUtils.poly.distanceToLine(p, start, end);
 // 3675538.019968191 meters
 ```
 
 ### Compute Area
 
 ```dart
-final area = SphericalUtils.computeArea(polygon);
+final area = GoogleMapsUtils.spherical.computeArea(polygon);
 // Area in square meters
 
-final signedArea = SphericalUtils.computeSignedArea(polygon);
+final signedArea = GoogleMapsUtils.spherical.computeSignedArea(polygon);
 // Positive = counter-clockwise, negative = clockwise
 ```
 
@@ -260,73 +263,76 @@ final signedArea = SphericalUtils.computeSignedArea(polygon);
 
 ```dart
 // Create bounds from a center point + radius
-final bounds = SphericalUtils.toBounds(-23.55, -46.63, 1000.0);
+// Returns a LatLngBounds record: (ne: Point<double>, sw: Point<double>)
+final bounds = GoogleMapsUtils.spherical.toBounds(-23.55, -46.63, 1000.0);
+print(bounds.ne); // north-east corner
+print(bounds.sw); // south-west corner
 
 // Create bounds from a list of points
-final bounds = SphericalUtils.toBoundsFromPoints(path);
+final bounds = GoogleMapsUtils.spherical.toBoundsFromPoints(path);
 
 // Get the center of a bounds
-final center = SphericalUtils.centerFromLatLngBounds(bounds);
+final center = GoogleMapsUtils.spherical.centerFromLatLngBounds(bounds);
 
 // Split bounds into a grid (division² sub-bounds)
-final tiles = SphericalUtils.toSubBounds(bounds, division: 3);
+final tiles = GoogleMapsUtils.spherical.toSubBounds(bounds, division: 3);
 // Returns 9 sub-bounds
 ```
 
 ### Closed Polygon Check
 
 ```dart
-PolyUtils.isClosedPolygon(polygon); // true if first == last point
+GoogleMapsUtils.poly.isClosedPolygon(polygon); // true if first == last point
 ```
 
 ### Custom Tolerance (On-Path / On-Edge)
 
 ```dart
 // Default tolerance is 0.1 meters. Use custom tolerance for proximity:
-final isNear = PolyUtils.isLocationOnPathTolerance(
+final isNear = GoogleMapsUtils.poly.isLocationOnPathTolerance(
   point, polyline, true, 50.0, // 50 meters tolerance
 );
 
 // Same for edges:
-final isNearEdge = PolyUtils.isLocationOnEdgeTolerance(
+final isNearEdge = GoogleMapsUtils.poly.isLocationOnEdgeTolerance(
   point, polygon, true, 50.0,
 );
 
 // With index:
-final idx = PolyUtils.locationIndexOnPathTolerance(
+final idx = GoogleMapsUtils.poly.locationIndexOnPathTolerance(
   point, polyline, true, 50.0,
 );
 ```
 
-### MathUtils (Low-Level Helpers)
+### Math Helpers (Low-Level)
 
 ```dart
 // Clamp a value to a range
-MathUtils.clamp(15.0, 0.0, 10.0); // 10.0
+GoogleMapsUtils.math.clamp(15.0, 0.0, 10.0); // 10.0
 
 // Wrap a value into [min, max) — useful for longitude
-MathUtils.wrap(190.0, -180.0, 180.0); // -170.0
+GoogleMapsUtils.math.wrap(190.0, -180.0, 180.0); // -170.0
 
 // Non-negative modulo
-MathUtils.mod(-1.0, 360.0); // 359.0
+GoogleMapsUtils.math.mod(-1.0, 360.0); // 359.0
 
 // Mercator projection (radians)
-final y = MathUtils.mercator(latInRadians);
-final lat = MathUtils.inverseMercator(y);
+final y = GoogleMapsUtils.math.mercator(latInRadians);
+final lat = GoogleMapsUtils.math.inverseMercator(y);
 
 // Haversine / inverse haversine
-final h = MathUtils.hav(angleInRadians);
-final angle = MathUtils.arcHav(h);
+final h = GoogleMapsUtils.math.hav(angleInRadians);
+final angle = GoogleMapsUtils.math.arcHav(h);
 
 // Haversine distance on unit sphere
-final havDist = MathUtils.havDistance(lat1, lat2, dLng);
+final havDist = GoogleMapsUtils.math.havDistance(lat1, lat2, dLng);
 ```
 
 ### Degree / Radian Conversions
 
 ```dart
-SphericalUtils.toRadians(90.0);  // 1.5707963... (π/2)
-SphericalUtils.toDegrees(pi);    // 180.0
+GoogleMapsUtils.spherical.toRadians(90.0);  // 1.5707963... (π/2)
+GoogleMapsUtils.spherical.toDegrees(pi);    // 180.0
 ```
 
 ---
@@ -356,7 +362,7 @@ point is inside polygon?: true
 
 ## 📐 API Reference
 
-### `SphericalUtils`
+### `GoogleMapsUtils.spherical`
 
 | Method | Description |
 |--------|-------------|
@@ -378,7 +384,7 @@ point is inside polygon?: true
 | `toRadians(deg)` | Degrees to radians |
 | `toDegrees(rad)` | Radians to degrees |
 
-### `PolyUtils`
+### `GoogleMapsUtils.poly`
 
 | Method | Description |
 |--------|-------------|
@@ -396,7 +402,7 @@ point is inside polygon?: true
 | `distanceToLine(point, start, end)` | Distance to a line segment |
 | `isClosedPolygon(poly)` | Whether first == last point |
 
-### `MathUtils`
+### `GoogleMapsUtils.math`
 
 | Method | Description |
 |--------|-------------|

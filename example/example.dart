@@ -29,7 +29,7 @@ void main() {
   final london = Point<double>(51.5074, -0.1278); // London, UK
 
   final distanceParisLondon =
-      SphericalUtils.computeDistanceBetween(paris, london);
+      GoogleMapsUtils.spherical.computeDistanceBetween(paris, london);
   print('=== Distance ===');
   print('Paris → London: ${distanceParisLondon.toStringAsFixed(2)} meters');
   // Expected: ~341,549 meters (~341 km)
@@ -41,7 +41,7 @@ void main() {
   // Returns the initial bearing from one point to another.
   // Result is in degrees clockwise from North, range [-180, 180).
 
-  final heading = SphericalUtils.computeHeading(paris, london);
+  final heading = GoogleMapsUtils.spherical.computeHeading(paris, london);
   print('=== Heading ===');
   print('Paris → London heading: ${heading.toStringAsFixed(4)}°');
   // A negative value means the heading is west of north.
@@ -53,16 +53,16 @@ void main() {
   // Converts a heading angle to a 16-point compass abbreviation.
   // Useful for user-friendly direction display (e.g. "Head NW").
 
-  final cardinal = SphericalUtils.getCardinal(heading);
+  final cardinal = GoogleMapsUtils.spherical.getCardinal(heading);
   print('=== Cardinal ===');
   print('Heading ${heading.toStringAsFixed(1)}° = $cardinal');
 
   // All 16 compass points:
   // N, NNE, NE, ENE, E, ESE, SE, SSE, S, SSW, SW, WSW, W, WNW, NW, NNW
-  print('0°   = ${SphericalUtils.getCardinal(0)}');
-  print('90°  = ${SphericalUtils.getCardinal(90)}');
-  print('180° = ${SphericalUtils.getCardinal(180)}');
-  print('270° = ${SphericalUtils.getCardinal(270)}');
+  print('0°   = ${GoogleMapsUtils.spherical.getCardinal(0)}');
+  print('90°  = ${GoogleMapsUtils.spherical.getCardinal(90)}');
+  print('180° = ${GoogleMapsUtils.spherical.getCardinal(180)}');
+  print('270° = ${GoogleMapsUtils.spherical.getCardinal(270)}');
   print('');
 
   // --------------------------------------------------------------------------
@@ -71,11 +71,11 @@ void main() {
   // Returns the arc distance on the unit sphere, in radians.
   // Multiply by earth's radius to get meters (same as computeDistanceBetween).
 
-  final angle = SphericalUtils.computeAngleBetween(paris, london);
+  final angle = GoogleMapsUtils.spherical.computeAngleBetween(paris, london);
   print('=== Angle ===');
   print('Paris → London angle: ${angle.toStringAsFixed(8)} radians');
   print(
-      'Verify: angle × earthRadius = ${(angle * MathUtils.earthRadius).toStringAsFixed(2)} meters');
+      'Verify: angle × earthRadius = ${(angle * GoogleMapsUtils.math.earthRadius).toStringAsFixed(2)} meters');
   print('');
 
   // --------------------------------------------------------------------------
@@ -88,14 +88,16 @@ void main() {
   final startPoint = Point<double>(-23.5505, -46.6333); // São Paulo, Brazil
 
   // Move 5000 meters (5km) due north (heading = 0°)
-  final movedNorth = SphericalUtils.computeOffset(startPoint, 5000.0, 0.0);
+  final movedNorth =
+      GoogleMapsUtils.spherical.computeOffset(startPoint, 5000.0, 0.0);
   print('=== Compute Offset ===');
   print('Start: (${startPoint.x}, ${startPoint.y})');
   print(
       'After 5km North: (${movedNorth.x.toStringAsFixed(6)}, ${movedNorth.y.toStringAsFixed(6)})');
 
   // Move 5000 meters east (heading = 90°)
-  final movedEast = SphericalUtils.computeOffset(startPoint, 5000.0, 90.0);
+  final movedEast =
+      GoogleMapsUtils.spherical.computeOffset(startPoint, 5000.0, 90.0);
   print(
       'After 5km East:  (${movedEast.x.toStringAsFixed(6)}, ${movedEast.y.toStringAsFixed(6)})');
   print('');
@@ -106,7 +108,8 @@ void main() {
   // Given a destination, distance, and heading — find where you started.
   // Returns null if no valid solution exists.
 
-  final origin = SphericalUtils.computeOffsetOrigin(movedNorth, 5000.0, 0.0);
+  final origin =
+      GoogleMapsUtils.spherical.computeOffsetOrigin(movedNorth, 5000.0, 0.0);
   print('=== Compute Offset Origin ===');
   if (origin != null) {
     print(
@@ -124,7 +127,7 @@ void main() {
   // Useful for animations or placing markers along a route.
 
   print('=== Interpolation ===');
-  final midpoint = SphericalUtils.interpolate(paris, london, 0.5);
+  final midpoint = GoogleMapsUtils.spherical.interpolate(paris, london, 0.5);
   print(
       'Midpoint Paris→London: (${midpoint.x.toStringAsFixed(4)}, ${midpoint.y.toStringAsFixed(4)})');
 
@@ -132,7 +135,7 @@ void main() {
   print('10 waypoints along Paris → London:');
   for (int i = 0; i <= 10; i++) {
     final fraction = i / 10.0;
-    final wp = SphericalUtils.interpolate(paris, london, fraction);
+    final wp = GoogleMapsUtils.spherical.interpolate(paris, london, fraction);
     print(
         '  ${(fraction * 100).toStringAsFixed(0)}%: (${wp.x.toStringAsFixed(4)}, ${wp.y.toStringAsFixed(4)})');
   }
@@ -150,7 +153,7 @@ void main() {
     Point(-19.9167, -43.9345), // Belo Horizonte
   ];
 
-  final routeLength = SphericalUtils.computeLength(route);
+  final routeLength = GoogleMapsUtils.spherical.computeLength(route);
   print('=== Path Length ===');
   print('São Paulo → Rio → BH: ${(routeLength / 1000).toStringAsFixed(1)} km');
   print('');
@@ -167,7 +170,7 @@ void main() {
   final encodedPolyline =
       'wjiaFz`hgQs}GmmBok@}vX|cOzKvvT`uNutJz|UgqAglAjr@ijBz]opA|Vor@}ViqEokCaiGu|@byAkjAvrMgjDj_A??ey@abD';
 
-  final decodedPath = PolyUtils.decode(encodedPolyline);
+  final decodedPath = GoogleMapsUtils.poly.decode(encodedPolyline);
   print('=== Polyline Decode ===');
   print('Encoded string length: ${encodedPolyline.length} chars');
   print('Decoded into ${decodedPath.length} points');
@@ -181,7 +184,7 @@ void main() {
   // The reverse: encode a list of coordinates into a compact string.
   // Useful for sending paths to APIs or storing them efficiently.
 
-  final reEncoded = PolyUtils.encode(decodedPath);
+  final reEncoded = GoogleMapsUtils.poly.encode(decodedPath);
   print('=== Polyline Encode ===');
   print('Re-encoded: $reEncoded');
   print('Matches original: ${reEncoded == encodedPolyline}');
@@ -194,8 +197,8 @@ void main() {
   // The `tolerance` is in meters — a higher value removes more points.
   // Useful for: reducing payload size, improving rendering performance.
 
-  final simplified = PolyUtils.simplify(decodedPath, 5000.0);
-  final simplifiedEncoded = PolyUtils.encode(simplified);
+  final simplified = GoogleMapsUtils.poly.simplify(decodedPath, 5000.0);
+  final simplifiedEncoded = GoogleMapsUtils.poly.encode(simplified);
   print('=== Simplification ===');
   print('Original points:   ${decodedPath.length}');
   print('Simplified points: ${simplified.length}');
@@ -225,13 +228,13 @@ void main() {
 
   print('=== Point-in-Polygon ===');
   print(
-      'Inside point:  ${PolyUtils.containsLocationPoly(insidePoint, triangle)}'); // true
+      'Inside point:  ${GoogleMapsUtils.poly.containsLocationPoly(insidePoint, triangle)}'); // true
   print(
-      'Outside point: ${PolyUtils.containsLocationPoly(outsidePoint, triangle)}'); // false
+      'Outside point: ${GoogleMapsUtils.poly.containsLocationPoly(outsidePoint, triangle)}'); // false
 
   // With geodesic edges (great-circle segments instead of rhumb lines):
   print(
-      'Inside (geodesic): ${PolyUtils.containsLocationPoly(insidePoint, triangle, geodesic: true)}');
+      'Inside (geodesic): ${GoogleMapsUtils.poly.containsLocationPoly(insidePoint, triangle, geodesic: true)}');
   print('');
 
   // --------------------------------------------------------------------------
@@ -251,12 +254,13 @@ void main() {
 
   print('=== Point-on-Path ===');
   print(
-      'Point on equator segment: ${PolyUtils.isLocationOnPath(onPath, equatorPath, true)}'); // true
+      'Point on equator segment: ${GoogleMapsUtils.poly.isLocationOnPath(onPath, equatorPath, true)}'); // true
   print(
-      'Point off the segment:    ${PolyUtils.isLocationOnPath(offPath, equatorPath, true)}'); // false
+      'Point off the segment:    ${GoogleMapsUtils.poly.isLocationOnPath(offPath, equatorPath, true)}'); // false
 
   // Get which segment index the point falls on:
-  final segIdx = PolyUtils.locationIndexOnPath(onPath, equatorPath, true);
+  final segIdx =
+      GoogleMapsUtils.poly.locationIndexOnPath(onPath, equatorPath, true);
   print('Segment index: $segIdx'); // 0 (between equatorPath[0] and [1])
   print('');
 
@@ -278,9 +282,9 @@ void main() {
 
   print('=== Point-on-Edge ===');
   print(
-      'On polygon edge: ${PolyUtils.isLocationOnEdge(edgePoint, square, true)}'); // true
+      'On polygon edge: ${GoogleMapsUtils.poly.isLocationOnEdge(edgePoint, square, true)}'); // true
   print(
-      'On open path:    ${PolyUtils.isLocationOnPath(edgePoint, square, true)}'); // false (closing edge not included)
+      'On open path:    ${GoogleMapsUtils.poly.isLocationOnPath(edgePoint, square, true)}'); // false (closing edge not included)
   print('');
 
   // --------------------------------------------------------------------------
@@ -293,7 +297,8 @@ void main() {
   final segStart = Point<double>(0.0, 0.0);
   final segEnd = Point<double>(10.0, 5.0);
 
-  final distToLine = PolyUtils.distanceToLine(randomPoint, segStart, segEnd);
+  final distToLine =
+      GoogleMapsUtils.poly.distanceToLine(randomPoint, segStart, segEnd);
   print('=== Distance to Line ===');
   print('Distance: ${distToLine.toStringAsFixed(2)} meters');
   print('');
@@ -305,8 +310,8 @@ void main() {
   // computeSignedArea returns a positive value for counter-clockwise winding,
   // negative for clockwise. computeArea returns the absolute value.
 
-  final area = SphericalUtils.computeArea(triangle);
-  final signedArea = SphericalUtils.computeSignedArea(triangle);
+  final area = GoogleMapsUtils.spherical.computeArea(triangle);
+  final signedArea = GoogleMapsUtils.spherical.computeSignedArea(triangle);
   print('=== Area ===');
   print('Area: ${area.toStringAsFixed(2)} m²');
   print('Signed area: ${signedArea.toStringAsFixed(2)} m²');
@@ -322,23 +327,24 @@ void main() {
   print('=== Bounding Boxes ===');
 
   // From a center point and radius (meters):
-  final bounds = SphericalUtils.toBounds(-23.55, -46.63, 1000.0);
+  final bounds = GoogleMapsUtils.spherical.toBounds(-23.55, -46.63, 1000.0);
   print('Bounds from center+radius:');
   print(
-      '  NE: (${bounds.northEast.x.toStringAsFixed(6)}, ${bounds.northEast.y.toStringAsFixed(6)})');
+      '  NE: (${bounds.ne.x.toStringAsFixed(6)}, ${bounds.ne.y.toStringAsFixed(6)})');
   print(
-      '  SW: (${bounds.southWest.x.toStringAsFixed(6)}, ${bounds.southWest.y.toStringAsFixed(6)})');
+      '  SW: (${bounds.sw.x.toStringAsFixed(6)}, ${bounds.sw.y.toStringAsFixed(6)})');
 
   // From a list of points (finds the min/max lat/lng):
-  final boundsFromPts = SphericalUtils.toBoundsFromPoints(route);
+  final boundsFromPts = GoogleMapsUtils.spherical.toBoundsFromPoints(route);
   print('Bounds from points:');
   print(
-      '  NE: (${boundsFromPts.northEast.x.toStringAsFixed(4)}, ${boundsFromPts.northEast.y.toStringAsFixed(4)})');
+      '  NE: (${boundsFromPts.ne.x.toStringAsFixed(4)}, ${boundsFromPts.ne.y.toStringAsFixed(4)})');
   print(
-      '  SW: (${boundsFromPts.southWest.x.toStringAsFixed(4)}, ${boundsFromPts.southWest.y.toStringAsFixed(4)})');
+      '  SW: (${boundsFromPts.sw.x.toStringAsFixed(4)}, ${boundsFromPts.sw.y.toStringAsFixed(4)})');
 
   // Center of a bounding box:
-  final center = SphericalUtils.centerFromLatLngBounds(boundsFromPts);
+  final center =
+      GoogleMapsUtils.spherical.centerFromLatLngBounds(boundsFromPts);
   print(
       'Center: (${center.x.toStringAsFixed(4)}, ${center.y.toStringAsFixed(4)})');
   print('');
@@ -350,14 +356,15 @@ void main() {
   // division=2 → 4 tiles, division=3 → 9 tiles, etc.
   // Useful for: paginated map loading, spatial partitioning.
 
-  final tiles = SphericalUtils.toSubBounds(boundsFromPts, division: 3);
+  final tiles =
+      GoogleMapsUtils.spherical.toSubBounds(boundsFromPts, division: 3);
   print('=== Sub-Bounds ===');
   print('Split into ${tiles.length} tiles (3×3 grid):');
   for (int i = 0; i < tiles.length; i++) {
     final t = tiles[i];
     print(
-        '  Tile $i: NE(${t.northEast.x.toStringAsFixed(4)}, ${t.northEast.y.toStringAsFixed(4)}) '
-        'SW(${t.southWest.x.toStringAsFixed(4)}, ${t.southWest.y.toStringAsFixed(4)})');
+        '  Tile $i: NE(${t.ne.x.toStringAsFixed(4)}, ${t.ne.y.toStringAsFixed(4)}) '
+        'SW(${t.sw.x.toStringAsFixed(4)}, ${t.sw.y.toStringAsFixed(4)})');
   }
   print('');
 
@@ -367,8 +374,10 @@ void main() {
   // A simple utility to check whether a polyline is closed (first == last).
 
   print('=== Closed Polygon Check ===');
-  print('Triangle is closed: ${PolyUtils.isClosedPolygon(triangle)}'); // true
-  print('Route is closed:    ${PolyUtils.isClosedPolygon(route)}'); // false
+  print(
+      'Triangle is closed: ${GoogleMapsUtils.poly.isClosedPolygon(triangle)}'); // true
+  print(
+      'Route is closed:    ${GoogleMapsUtils.poly.isClosedPolygon(route)}'); // false
   print('');
 
   // --------------------------------------------------------------------------
@@ -384,19 +393,19 @@ void main() {
 
   // Default tolerance (0.1m) — too far away:
   print(
-      'Near point (0.1m tolerance):  ${PolyUtils.isLocationOnPathTolerance(nearPoint, equatorPath, true, 0.1)}'); // false
+      'Near point (0.1m tolerance):  ${GoogleMapsUtils.poly.isLocationOnPathTolerance(nearPoint, equatorPath, true, 0.1)}'); // false
 
   // Custom tolerance of 20 meters — close enough:
   print(
-      'Near point (20m tolerance):   ${PolyUtils.isLocationOnPathTolerance(nearPoint, equatorPath, true, 20.0)}'); // true
+      'Near point (20m tolerance):   ${GoogleMapsUtils.poly.isLocationOnPathTolerance(nearPoint, equatorPath, true, 20.0)}'); // true
 
   // Edge with custom tolerance:
   print(
-      'Edge (50m tolerance):         ${PolyUtils.isLocationOnEdgeTolerance(nearPoint, square, true, 20.0)}'); // true
+      'Edge (50m tolerance):         ${GoogleMapsUtils.poly.isLocationOnEdgeTolerance(nearPoint, square, true, 20.0)}'); // true
 
   // locationIndexOnPath with tolerance:
-  final idxTol = PolyUtils.locationIndexOnPathTolerance(
-      nearPoint, equatorPath, true, 20.0);
+  final idxTol = GoogleMapsUtils.poly
+      .locationIndexOnPathTolerance(nearPoint, equatorPath, true, 20.0);
   print('Segment index (20m tol): $idxTol'); // 0
   print('');
 
@@ -409,77 +418,82 @@ void main() {
   print('=== locationIndexOnEdgeOrPath ===');
 
   // closed=false → acts like isLocationOnPath (no closing segment)
-  final idxOpen =
-      PolyUtils.locationIndexOnEdgeOrPath(edgePoint, square, false, true, 0.1);
+  final idxOpen = GoogleMapsUtils.poly
+      .locationIndexOnEdgeOrPath(edgePoint, square, false, true, 0.1);
   print('Edge point, open path:   index=$idxOpen'); // -1 (not found)
 
   // closed=true → acts like isLocationOnEdge (closing segment included)
-  final idxClosed =
-      PolyUtils.locationIndexOnEdgeOrPath(edgePoint, square, true, true, 0.1);
+  final idxClosed = GoogleMapsUtils.poly
+      .locationIndexOnEdgeOrPath(edgePoint, square, true, true, 0.1);
   print('Edge point, closed path: index=$idxClosed'); // 3 (on closing segment)
   print('');
 
   // --------------------------------------------------------------------------
   // 22. MATH UTILS (LOW-LEVEL HELPERS)
   // --------------------------------------------------------------------------
-  // MathUtils provides the building blocks used internally by SphericalUtils
-  // and PolyUtils. You can use them directly for custom calculations.
+  // GoogleMapsUtils.math provides the building blocks used internally by the
+  // spherical and poly utilities. You can use them directly for custom
+  // calculations.
 
   print('=== MathUtils ===');
 
   // Earth's mean radius (IUGG standard, meters):
-  print('Earth radius: ${MathUtils.earthRadius} meters');
+  print('Earth radius: ${GoogleMapsUtils.math.earthRadius} meters');
 
   // Clamp: restricts a value to [low, high]
-  print('clamp(15, 0, 10): ${MathUtils.clamp(15, 0, 10)}'); // 10
-  print('clamp(-5, 0, 10): ${MathUtils.clamp(-5, 0, 10)}'); // 0
-  print('clamp(5, 0, 10):  ${MathUtils.clamp(5, 0, 10)}'); // 5
+  print('clamp(15, 0, 10): ${GoogleMapsUtils.math.clamp(15, 0, 10)}'); // 10
+  print('clamp(-5, 0, 10): ${GoogleMapsUtils.math.clamp(-5, 0, 10)}'); // 0
+  print('clamp(5, 0, 10):  ${GoogleMapsUtils.math.clamp(5, 0, 10)}'); // 5
 
   // Wrap: wraps a value into the range [min, max)
   // Commonly used for longitude wrapping [-180, 180)
-  print('wrap(190, -180, 180):  ${MathUtils.wrap(190, -180, 180)}'); // -170
-  print('wrap(-200, -180, 180): ${MathUtils.wrap(-200, -180, 180)}'); // 160
+  print(
+      'wrap(190, -180, 180):  ${GoogleMapsUtils.math.wrap(190, -180, 180)}'); // -170
+  print(
+      'wrap(-200, -180, 180): ${GoogleMapsUtils.math.wrap(-200, -180, 180)}'); // 160
 
   // Mod: non-negative modulo (unlike Dart's %, which can return negatives)
-  print('mod(-1, 360):  ${MathUtils.mod(-1, 360)}'); // 359
-  print('mod(361, 360): ${MathUtils.mod(361, 360)}'); // 1
+  print('mod(-1, 360):  ${GoogleMapsUtils.math.mod(-1, 360)}'); // 359
+  print('mod(361, 360): ${GoogleMapsUtils.math.mod(361, 360)}'); // 1
 
   // Mercator projection (latitude in radians → mercator Y, and inverse)
-  final latRad = SphericalUtils.toRadians(45.0); // 45° latitude
-  final mercY = MathUtils.mercator(latRad);
-  final latBack = MathUtils.inverseMercator(mercY);
+  final latRad = GoogleMapsUtils.spherical.toRadians(45.0); // 45° latitude
+  final mercY = GoogleMapsUtils.math.mercator(latRad);
+  final latBack = GoogleMapsUtils.math.inverseMercator(mercY);
   print('mercator(45° in rad):    ${mercY.toStringAsFixed(8)}');
   print(
-      'inverseMercator(y):      ${SphericalUtils.toDegrees(latBack).toStringAsFixed(4)}°'); // 45°
+      'inverseMercator(y):      ${GoogleMapsUtils.spherical.toDegrees(latBack).toStringAsFixed(4)}°'); // 45°
 
   // Haversine and inverse haversine
   // hav(θ) = (1 - cos(θ)) / 2 = sin²(θ/2)
-  final h = MathUtils.hav(1.0); // hav(1 radian)
-  final recovered = MathUtils.arcHav(h); // should give back 1.0
+  final h = GoogleMapsUtils.math.hav(1.0); // hav(1 radian)
+  final recovered = GoogleMapsUtils.math.arcHav(h); // should give back 1.0
   print('hav(1.0):    ${h.toStringAsFixed(8)}');
   print('arcHav(h):   ${recovered.toStringAsFixed(8)}'); // 1.0
 
   // havDistance: haversine of the central angle between two points (on unit sphere)
   // Arguments are in radians: lat1, lat2, dLng (difference in longitude)
-  final lat1 = SphericalUtils.toRadians(48.8566); // Paris lat
-  final lat2 = SphericalUtils.toRadians(51.5074); // London lat
-  final dLng =
-      SphericalUtils.toRadians(2.3522) - SphericalUtils.toRadians(-0.1278);
-  final havDist = MathUtils.havDistance(lat1, lat2, dLng);
+  final lat1 = GoogleMapsUtils.spherical.toRadians(48.8566); // Paris lat
+  final lat2 = GoogleMapsUtils.spherical.toRadians(51.5074); // London lat
+  final dLng = GoogleMapsUtils.spherical.toRadians(2.3522) -
+      GoogleMapsUtils.spherical.toRadians(-0.1278);
+  final havDist = GoogleMapsUtils.math.havDistance(lat1, lat2, dLng);
   print('havDistance(Paris, London): ${havDist.toStringAsFixed(10)}');
   // To get actual distance: arcHav(havDist) * earthRadius
-  final distFromHav = MathUtils.arcHav(havDist) * MathUtils.earthRadius;
+  final distFromHav =
+      GoogleMapsUtils.math.arcHav(havDist) * GoogleMapsUtils.math.earthRadius;
   print('Distance from hav: ${distFromHav.toStringAsFixed(2)} meters');
   print('');
 
   // --------------------------------------------------------------------------
   // 23. DEGREE/RADIAN CONVERSIONS
   // --------------------------------------------------------------------------
-  // SphericalUtils exposes toRadians and toDegrees for convenience.
+  // GoogleMapsUtils.spherical exposes toRadians and toDegrees for convenience.
 
   print('=== Degree/Radian Conversions ===');
-  print('90° → radians: ${SphericalUtils.toRadians(90.0)}'); // π/2
-  print('π radians → degrees: ${SphericalUtils.toDegrees(pi)}'); // 180
+  print('90° → radians: ${GoogleMapsUtils.spherical.toRadians(90.0)}'); // π/2
+  print(
+      'π radians → degrees: ${GoogleMapsUtils.spherical.toDegrees(pi)}'); // 180
   print('');
 
   // --------------------------------------------------------------------------
@@ -490,33 +504,15 @@ void main() {
   // This is what computeAngleBetween uses internally.
 
   print('=== Distance Radians ===');
-  final dRad = SphericalUtils.distanceRadians(
-    SphericalUtils.toRadians(paris.x), // lat1
-    SphericalUtils.toRadians(paris.y), // lng1
-    SphericalUtils.toRadians(london.x), // lat2
-    SphericalUtils.toRadians(london.y), // lng2
+  final dRad = GoogleMapsUtils.spherical.distanceRadians(
+    GoogleMapsUtils.spherical.toRadians(paris.x), // lat1
+    GoogleMapsUtils.spherical.toRadians(paris.y), // lng1
+    GoogleMapsUtils.spherical.toRadians(london.x), // lat2
+    GoogleMapsUtils.spherical.toRadians(london.y), // lng2
   );
   print('distanceRadians(Paris, London): ${dRad.toStringAsFixed(8)} rad');
   print(
-      'Same as computeAngleBetween:    ${SphericalUtils.computeAngleBetween(paris, london).toStringAsFixed(8)} rad');
-  print('');
-
-  // --------------------------------------------------------------------------
-  // 25. SIGNED AREA WITH CUSTOM RADIUS
-  // --------------------------------------------------------------------------
-  // computeSignedAreaTest lets you compute signed area on a sphere of any
-  // radius (not just Earth). Useful for unit testing or non-Earth spheres.
-
-  print('=== Signed Area (custom radius) ===');
-  // Area on a unit sphere (radius = 1):
-  final unitArea = SphericalUtils.computeSignedAreaTest(triangle, 1.0);
-  print('Signed area on unit sphere: ${unitArea.toStringAsFixed(10)} sr');
-  // Area on Earth:
-  final earthArea =
-      SphericalUtils.computeSignedAreaTest(triangle, MathUtils.earthRadius);
-  print('Signed area on Earth: ${earthArea.toStringAsFixed(2)} m²');
-  print(
-      'Same as computeSignedArea: ${SphericalUtils.computeSignedArea(triangle).toStringAsFixed(2)} m²');
+      'Same as computeAngleBetween:    ${GoogleMapsUtils.spherical.computeAngleBetween(paris, london).toStringAsFixed(8)} rad');
   print('');
 
   // --------------------------------------------------------------------------

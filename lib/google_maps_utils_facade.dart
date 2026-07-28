@@ -1,6 +1,11 @@
 import 'dart:math';
 
-import 'package:google_maps_utils/google_maps_utils.dart';
+import 'package:google_maps_utils/google_maps_utils_lat_lng_bounds.dart';
+
+import 'src/models/models.dart';
+import 'src/google_maps_utils_math.dart';
+import 'src/google_maps_utils_poly.dart';
+import 'src/google_maps_utils_spherical.dart';
 
 /// A unified entry point for the google_maps_utils package.
 ///
@@ -53,17 +58,26 @@ class GoogleMapsUtilsSpherical {
   String getCardinal(double angle) => SphericalUtils.getCardinal(angle);
 
   /// Creates a bounding box centered at ([x], [y]) with [radiusInMeters].
-  GoogleMapsUtilsLatLngBounds toBounds(
-          double x, double y, double radiusInMeters) =>
-      SphericalUtils.toBounds(x, y, radiusInMeters);
+  ///
+  /// Returns a record `(ne: Point<double>, sw: Point<double>)`.
+  GoogleMapsUtilsLatLngBounds toBounds(double x, double y, double radiusInMeters) {
+    final internal = SphericalUtils.toBounds(x, y, radiusInMeters);
+    return (ne: internal.northEast, sw: internal.southWest);
+  }
 
   /// Computes the smallest bounding box that contains all [points].
-  GoogleMapsUtilsLatLngBounds toBoundsFromPoints(List<Point<double>> points) =>
-      SphericalUtils.toBoundsFromPoints(points);
+  ///
+  /// Returns a record `(ne: Point<double>, sw: Point<double>)`.
+  GoogleMapsUtilsLatLngBounds toBoundsFromPoints(List<Point<double>> points) {
+    final internal = SphericalUtils.toBoundsFromPoints(points);
+    return (ne: internal.northEast, sw: internal.southWest);
+  }
 
   /// Returns the center point of the given [bounds].
   Point<double> centerFromLatLngBounds(GoogleMapsUtilsLatLngBounds bounds) =>
-      SphericalUtils.centerFromLatLngBounds(bounds);
+      SphericalUtils.centerFromLatLngBounds(
+        LatLngBoundsModel(northEast: bounds.ne, southWest: bounds.sw),
+      );
 
   /// Returns the heading from [from] to [to] in degrees \[-180, 180).
   double computeHeading(Point<double> from, Point<double> to) =>
@@ -109,10 +123,17 @@ class GoogleMapsUtilsSpherical {
       SphericalUtils.computeSignedArea(path);
 
   /// Splits [bounds] into a grid of [division]² sub-bounds.
-  List<GoogleMapsUtilsLatLngBounds> toSubBounds(
-          GoogleMapsUtilsLatLngBounds bounds,
-          {int division = 2}) =>
-      SphericalUtils.toSubBounds(bounds, division: division);
+  ///
+  /// Returns a list of [GoogleMapsUtilsLatLngBounds] records.
+  List<GoogleMapsUtilsLatLngBounds> toSubBounds(GoogleMapsUtilsLatLngBounds bounds, {int division = 2}) {
+    final internal = LatLngBoundsModel(
+      northEast: bounds.ne,
+      southWest: bounds.sw,
+    );
+    return SphericalUtils.toSubBounds(internal, division: division)
+        .map((b) => (ne: b.northEast, sw: b.southWest))
+        .toList();
+  }
 }
 
 // =============================================================================
